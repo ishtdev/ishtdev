@@ -1,0 +1,96 @@
+{
+    "name": "laravel/laravel",
+    "type": "project",
+    "description": "The skeleton application for the Laravel framework.",
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.1",
+        "aws/aws-sdk-php": "^3.282",
+        "barryvdh/laravel-dompdf": "^2.2",
+        "brainfoolong/cryptojs-aes-php": "^2.2",
+        "darkaonline/l5-swagger": "^8.5",
+        "doctrine/dbal": "^3.8",
+        "dompdf/dompdf": "^2.0",
+        "google/apiclient": "^2.16",
+        "google/auth": "*",
+        "gr8shivam/laravel-sms-api": "^3.0",
+        "guzzlehttp/guzzle": "^7.8",
+        "illuminate/support": "*",
+        "intervention/image": "^2.7",
+        "laravel/cashier": "^14.12",
+        "laravel/framework": "^10.10",
+        "laravel/sanctum": "^3.3",
+        "laravel/tinker": "^2.8",
+        "laravel/ui": "^4.2",
+        "laravelcollective/html": "^6.4",
+        "league/flysystem-aws-s3-v3": "^3.16",
+        "rap2hpoutre/laravel-log-viewer": "^2.3",
+        "sendgrid/sendgrid": "^8.0",
+        "smsfactor/smsfactor-laravel": "^1.1",
+        "spatie/laravel-permission": "^5.11",
+        "stripe/stripe-php": "^10.21",
+        "twilio/sdk": "^7.11",
+        "tymon/jwt-auth": "^2.0",
+        "tzsk/sms": "^7.0",
+        "vinkla/hashids": "^11.0",
+        "yajra/laravel-datatables-oracle": "^10.8",
+        "zircote/swagger-php": "^4.8"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.9.1",
+        "kitloong/laravel-migrations-generator": "^6.10",
+        "laravel/pint": "^1.0",
+        "laravel/sail": "^1.18",
+        "mockery/mockery": "^1.4.4",
+        "nunomaduro/collision": "^7.0",
+        "phpunit/phpunit": "^10.1",
+        "spatie/laravel-ignition": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

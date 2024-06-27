@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('community_detail', function (Blueprint $table) {
+            if (!Schema::hasColumn('community_detail', 'profile_id')) {
+                $table->unsignedBigInteger('profile_id')->nullable();
+            }
+        });
+    }
+
+    
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('community_detail', function (Blueprint $table) {
+            $table->dropForeign(['profile_id']);
+            $table->dropColumn('profile_id');
+        });
+    }
+};
