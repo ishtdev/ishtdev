@@ -1046,6 +1046,7 @@ class CommunityController extends Controller
                     'short_description',
                     'location_of_community',
                     'created_at',
+                    'created_profile_id as created_by',
                     'city',
                     \DB::raw("(6373 * acos(cos(radians($latitude))
                 * cos(radians(latitude))
@@ -1067,9 +1068,13 @@ class CommunityController extends Controller
                 }
 
                 $filteredCommunities = $communities->map(function ($community) {
+
+                    $user_id = Profile::where('id', $community->created_by)->value('user_id');
+
                     return [
                         'id' => $community->id,
                         'profile_id' => $community->profile_id,
+                        'user_id' => $user_id,
                         'name_of_community' => ucfirst($community->name_of_community),
                         'status' => $community->status,
                         'community_image' => $community->community_image,
@@ -1096,6 +1101,7 @@ class CommunityController extends Controller
                     'short_description',
                     'location_of_community',
                     'created_at',
+                    'created_profile_id as created_by',
                     'city',
                 )
                     ->whereRaw("status IN ('approved', 'approved_with_tick')")
@@ -1110,10 +1116,17 @@ class CommunityController extends Controller
                     ], 404);
                 }
 
+
+                // echo"<pre>";print_r($communities->toArray());die;
                 $filteredCommunities = $communities->map(function ($community) {
+                     
+                    $user_id = Profile::where('id', $community->created_by)->value('user_id');
+
+                    // echo"<pre>";print_r($user_id);die;
                     return [
                         'id' => $community->id,
                         'profile_id' => $community->profile_id,
+                        'user_id' => $user_id,
                         'name_of_community' => ucfirst($community->name_of_community),
                         'status' => $community->status,
                         'community_image' => $community->community_image,
