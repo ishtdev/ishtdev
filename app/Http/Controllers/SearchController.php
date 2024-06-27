@@ -408,6 +408,7 @@ class SearchController extends Controller
                     $existingRecord =CommunityDetail::select(
                     'id',
                     'profile_id',
+                    'created_profile_id as created_by',
                     'status',
                     'name_of_community',
                     'community_image',
@@ -419,7 +420,7 @@ class SearchController extends Controller
                     \DB::raw("(6373 * acos(cos(radians($latitude))
                     * cos(radians(latitude))
                     * cos(radians(longitude) - radians($longitude))
-                    + sin(radians($latitude)) * sin(radians(latitude)))) AS distance_in_km")
+                    + sin(radians($latitude)) * sin(radians(latitude)))) AS distance_in_km"),
                 )
                 ->whereRaw("status IN ('approved', 'approved_with_tick')")
                 ->whereNotNull('latitude')
@@ -428,10 +429,13 @@ class SearchController extends Controller
 
                 $communityData = [];
                 foreach ($existingRecord as $community) {
+                    $user_id ='';
+                    $user_id = Profile::where('id', $community->created_by)->value('user_id');
                     $communityData[] = [
                         'id' => $community->id,
                         'name' => $community->name_of_community,
                         'profile_id' => $community->profile_id,
+                        'user_id' => $user_id,
                         'status' => $community->status,
                         'community_image' => $community->community_image,
                         'community_image_background' => $community->community_image_background,
@@ -453,7 +457,8 @@ class SearchController extends Controller
                         'latitude',
                         'longitude',
                         'short_description',
-                        'location_of_community'
+                        'location_of_community',
+                        'created_profile_id as created_by',
                     )
                     ->whereRaw("status IN ('approved', 'approved_with_tick')")
                     ->where(function ($query) use ($searchValue) {
@@ -466,10 +471,14 @@ class SearchController extends Controller
 
                 $communityData = [];
                 foreach ($existingRecord as $community) {
+                    $user_id ='';
+                    $user_id = Profile::where('id', $community->created_by)->value('user_id');
+
                     $communityData[] = [
                         'id' => $community->id,
                         'name' => $community->name_of_community,
                         'profile_id' => $community->profile_id,
+                        'user_id' => $user_id,
                         'status' => $community->status,
                         'community_image' => $community->community_image,
                         'community_image_background' => $community->community_image_background,
