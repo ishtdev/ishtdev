@@ -9,7 +9,6 @@
 /public/kycdocument
 /public/communitydocument
 /public/postImage
-public
 /storage/*.key
 /vendor
 .env
