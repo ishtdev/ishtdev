@@ -1218,65 +1218,64 @@ class CommunityController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function showCommunityDetails($communityid)
-    {
-        try {
-            $communities = CommunityDetail::where('profile_id', $communityid)->get();
+{
+    try {
+        $communities = CommunityDetail::where('profile_id', $communityid)->get();
 
-            if ($communities->isEmpty()) {
-                return response()->json([
-                    'code' => 404,
-                    'status' => 'failure',
-                    'message' => 'No community found',
-                    'data' => [],
-                ], 404);
-            }
-            $filteredCommunities = [];
+        if ($communities->isEmpty()) {
+            return response()->json([
+                'code' => 404,
+                'status' => 'failure',
+                'message' => 'No community found',
+                'data' => [],
+            ], 404);
+        }
 
-            foreach ($communities as $community) {
+        $filteredCommunities = [];
 
-                $rejectionReason = ($community->status === "rejected" || $community->status === "block") ? $community->rejection_reason : null;
-                $liveArtiUrl = CommunityArti::where('community_detail_id', $community->id)->first()->live_arti_link ?? null;
-                $facilities = CommunityFacility::where('community_profile_id', $community->profile_id)->get()->toArray();
+        foreach ($communities as $community) {
+            $rejectionReason = ($community->status === "rejected" || $community->status === "block") ? $community->rejection_reason : null;
+            $communityArti = CommunityArti::where('community_detail_id', $community->id)->first();
+            $liveArtiUrl = $communityArti ? $communityArti->live_arti_link : null;
+            $facilities = CommunityFacility::where('community_profile_id', $community->profile_id)->get()->toArray();
 
-
-                $formattedFacilities = [];
-                foreach ($facilities as $facility) {
-                    if (!isset($formattedFacilities[$facility['facility']])) {
-                        $formattedFacilities[$facility['facility']] = [];
-                    }
-                    $amenityIcon = '';
-
-                    if ($facility['facility'] === 'amenities' && $facility['key']) {
-
-                        $amenityIcon = Amenities::select('icon')->where('amenity_name', $facility['key'])->where('deleted_at', null)->first();
-
-                        $formattedFacilities[$facility['facility']][] = [
-                            'id' => $facility['id'],
-                            'community_profile_id' => $facility['community_profile_id'],
-                            'facility' => $facility['facility'],
-                            'key' => $facility['key'],
-                            'value' => $facility['value'],
-                            'icon' => $amenityIcon['icon'],
-                        ];
-                        // echo"<pre>"; print_r($amenityIcon['icon']); 
-                    } else {
-                        $formattedFacilities[$facility['facility']][] = [
-                            'id' => $facility['id'],
-                            'community_profile_id' => $facility['community_profile_id'],
-                            'facility' => $facility['facility'],
-                            'key' => $facility['key'],
-                            'value' => $facility['value'],
-                        ];
-                    }
-
+            $formattedFacilities = [];
+            foreach ($facilities as $facility) {
+                if (!isset($formattedFacilities[$facility['facility']])) {
+                    $formattedFacilities[$facility['facility']] = [];
                 }
+                $amenityIcon = '';
 
-                $badges = CommunityBadge::where('community_id', $community->id)
-                    ->with('badge_type.lord')->get()->toArray();
+                if ($facility['facility'] === 'amenities' && $facility['key']) {
+                    $amenity = Amenities::select('icon')->where('amenity_name', $facility['key'])->where('deleted_at', null)->first();
+                    $amenityIcon = $amenity ? $amenity->icon : '';
 
-                $formattedBadges = [];
-                foreach ($badges as $badge) {
-                    $badgeId = $badge['badge_id'];
+                    $formattedFacilities[$facility['facility']][] = [
+                        'id' => $facility['id'],
+                        'community_profile_id' => $facility['community_profile_id'],
+                        'facility' => $facility['facility'],
+                        'key' => $facility['key'],
+                        'value' => $facility['value'],
+                        'icon' => $amenityIcon,
+                    ];
+                } else {
+                    $formattedFacilities[$facility['facility']][] = [
+                        'id' => $facility['id'],
+                        'community_profile_id' => $facility['community_profile_id'],
+                        'facility' => $facility['facility'],
+                        'key' => $facility['key'],
+                        'value' => $facility['value'],
+                        'city' => $facility['city'] ?? '',
+                    ];
+                }
+            }
+
+            $badges = CommunityBadge::where('community_id', $community->id)
+                ->with('badge_type.lord')->get()->toArray();
+
+            $formattedBadges = [];
+            foreach ($badges as $badge) {
+                if (isset($badge['badge_type']['lord'])) {
                     $formattedBadges['badge'][] = [
                         'id' => $badge['id'],
                         'community_id' => $badge['community_id'],
@@ -1289,56 +1288,71 @@ class CommunityController extends Controller
                             'image' => $badge['badge_type']['image'],
                         ],
                     ];
+                } else {
+                    // Handle missing badge type lord here
+                    $formattedBadges['badge'][] = [
+                        'id' => $badge['id'],
+                        'community_id' => $badge['community_id'],
+                        'title' => $badge['title'],
+                        'check_in_count' => $badge['check_in_count'],
+                        'badge_detail' => [
+                            'lord_id' => $badge['badge_type']['lord_id'],
+                            'lord_name' => null,
+                            'type' => $badge['badge_type']['type'],
+                            'image' => $badge['badge_type']['image'],
+                        ],
+                    ];
                 }
-
-                $filteredCommunities[] = [
-                    'id' => $community->id,
-                    'profile_id' => $community->profile_id,
-                    'name_of_community' => $community->name_of_community,
-                    'short_description' => $community->short_description,
-                    'long_description' => $community->long_description,
-                    'main_festival_community' => $community->main_festival_community,
-                    'upload_qr' => $community->upload_qr,
-                    'upload_pdf' => $community->upload_pdf,
-                    'upload_video' => $community->upload_video,
-                    'location_of_community' => $community->location_of_community,
-                    'distance_from_main_city' => $community->distance_from_main_city,
-                    'distance_from_airpot' => $community->distance_from_airpot,
-                    'upload_licence01' => $community->upload_licence01,
-                    'upload_licence02' => $community->upload_licence02,
-                    'schedual_visit' => $community->schedual_visit,
-                    'make_community_private' => $community->make_community_private,
-                    'community_lord_name' => $community->community_lord_name,
-                    'status' => $community->status,
-                    'rejection_reason' => $rejectionReason,
-                    'community_image' => $community->community_image,
-                    'community_image_background' => $community->community_image_background,
-                    'latlong' => $community->latlong,
-                    'live_arti_url' => $liveArtiUrl,
-                    'webiste_link' => $community->website_link,
-                    'facility' => empty($formattedFacilities) ? null : $this->processObject($formattedFacilities),
-                    'badge' => empty($formattedBadges['badge']) ? null : $this->processObject($formattedBadges['badge']),
-                ];
             }
 
-            return response()->json([
-                'code' => 200,
-                'status' => 'success',
-                'message' => 'All communities retrieved successfully',
-                'data' => $this->processObject($filteredCommunities),
-            ], 200);
-
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'code' => 500,
-                'status' => 'error',
-                'message' => 'An error occurred while processing the request.',
-                'errors' => [$e->getMessage()],
-                'data' => [],
-            ], 500);
+            $filteredCommunities[] = [
+                'id' => $community->id,
+                'profile_id' => $community->profile_id,
+                'name_of_community' => $community->name_of_community,
+                'short_description' => $community->short_description,
+                'long_description' => $community->long_description,
+                'main_festival_community' => $community->main_festival_community,
+                'upload_qr' => $community->upload_qr,
+                'upload_pdf' => $community->upload_pdf,
+                'upload_video' => $community->upload_video,
+                'location_of_community' => $community->location_of_community,
+                'distance_from_main_city' => $community->distance_from_main_city,
+                'distance_from_airpot' => $community->distance_from_airpot,
+                'upload_licence01' => $community->upload_licence01,
+                'upload_licence02' => $community->upload_licence02,
+                'schedual_visit' => $community->schedual_visit,
+                'make_community_private' => $community->make_community_private,
+                'community_lord_name' => $community->community_lord_name,
+                'status' => $community->status,
+                'rejection_reason' => $rejectionReason,
+                'community_image' => $community->community_image,
+                'community_image_background' => $community->community_image_background,
+                'latlong' => $community->latlong,
+                'live_arti_url' => $liveArtiUrl,
+                'webiste_link' => $community->website_link,
+                'facility' => empty($formattedFacilities) ? null : $this->processObject($formattedFacilities),
+                'badge' => empty($formattedBadges['badge']) ? null : $this->processObject($formattedBadges['badge']),
+            ];
         }
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'message' => 'All communities retrieved successfully',
+            'data' => $this->processObject($filteredCommunities),
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'code' => 500,
+            'status' => 'error',
+            'message' => 'An error occurred while processing the request.',
+            'errors' => [$e->getMessage()],
+            'data' => [],
+        ], 500);
     }
+}
+
 
 
     /**
