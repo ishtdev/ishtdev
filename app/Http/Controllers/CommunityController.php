@@ -378,10 +378,19 @@ class CommunityController extends Controller
                     }
                     //-----------facility update end----------
                     //-------edit badge start--------
+
+
                     $badgesData = isset($request['badge']) ? json_decode($request['badge'], true) : [];
-                    if ($request->has('badges')) {
+                    // print_r($badgesData);
+                    // die;
+
+                    // print_r($request->has('badges'));
+                    // die;
+
+                    if ($request->has('badge')) {
 
                         foreach ($badgesData['badges'] as $badgeData) {
+
                             if (!isset($badgeData['badge_id'])) {
                                 return response()->json([
                                     'code' => 400,
@@ -442,6 +451,15 @@ class CommunityController extends Controller
                             }
                         }
 
+
+                    } else {
+                        // Handle the case where 'badges' key is missing or not an array
+                        return response()->json([
+                            'code' => 400,
+                            'status' => 'failure',
+                            'message' => 'Invalid badge data structure.',
+                            'data' => (object) [],
+                        ]);
                     }
                     //-------edit badge ends---------
 
@@ -622,6 +640,7 @@ class CommunityController extends Controller
                 // die;
                 //-------facility add ends------
                 //-------add badge start--------
+
                 $badgesData = isset($request['badge']) ? json_decode($request['badge'], true) : [];
 
                 foreach ($badgesData['badges'] as $badgeData) {
@@ -1119,7 +1138,7 @@ class CommunityController extends Controller
 
                 // echo"<pre>";print_r($communities->toArray());die;
                 $filteredCommunities = $communities->map(function ($community) {
-                     
+
                     $user_id = Profile::where('id', $community->created_by)->value('user_id');
 
                     // echo"<pre>";print_r($user_id);die;
@@ -1221,7 +1240,7 @@ class CommunityController extends Controller
     {
         try {
             $communities = CommunityDetail::where('profile_id', $communityid)->get();
-    
+
             if ($communities->isEmpty()) {
                 return response()->json([
                     'code' => 404,
@@ -1230,26 +1249,26 @@ class CommunityController extends Controller
                     'data' => [],
                 ], 404);
             }
-    
+
             $filteredCommunities = [];
-    
+
             foreach ($communities as $community) {
                 $rejectionReason = ($community->status === "rejected" || $community->status === "block") ? $community->rejection_reason : null;
                 $communityArti = CommunityArti::where('community_detail_id', $community->id)->first();
                 $liveArtiUrl = $communityArti ? $communityArti->live_arti_link : null;
                 $facilities = CommunityFacility::where('community_profile_id', $community->profile_id)->get()->toArray();
-    
+
                 $formattedFacilities = [];
                 foreach ($facilities as $facility) {
                     if (!isset($formattedFacilities[$facility['facility']])) {
                         $formattedFacilities[$facility['facility']] = [];
                     }
                     $amenityIcon = '';
-    
+
                     if ($facility['facility'] === 'amenities' && $facility['key']) {
                         $amenity = Amenities::select('icon')->where('amenity_name', $facility['key'])->where('deleted_at', null)->first();
                         $amenityIcon = $amenity ? $amenity->icon : '';
-    
+
                         $formattedFacilities[$facility['facility']][] = [
                             'id' => $facility['id'],
                             'community_profile_id' => $facility['community_profile_id'],
@@ -1269,10 +1288,10 @@ class CommunityController extends Controller
                         ];
                     }
                 }
-    
+
                 $badges = CommunityBadge::where('community_id', $community->id)
                     ->with('badge_type.lord')->get()->toArray();
-    
+
                 $formattedBadges = [];
                 foreach ($badges as $badge) {
                     if (isset($badge['badge_type']['lord'])) {
@@ -1304,7 +1323,9 @@ class CommunityController extends Controller
                         ];
                     }
                 }
-    
+
+                // echo"<pre>";print_r($formattedBadges); 
+
                 $filteredCommunities[] = [
                     'id' => $community->id,
                     'profile_id' => $community->profile_id,
@@ -1334,14 +1355,14 @@ class CommunityController extends Controller
                     'badge' => empty($formattedBadges['badge']) ? null : $this->processObject($formattedBadges['badge']),
                 ];
             }
-    
+
             return response()->json([
                 'code' => 200,
                 'status' => 'success',
                 'message' => 'All communities retrieved successfully',
                 'data' => $this->processObject($filteredCommunities),
             ], 200);
-    
+
         } catch (\Exception $e) {
             return response()->json([
                 'code' => 500,
@@ -1352,7 +1373,7 @@ class CommunityController extends Controller
             ], 500);
         }
     }
-    
+
 
 
     /**
