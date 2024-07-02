@@ -20,32 +20,32 @@ export default function CommunityDetails() {
     }, []);
 
     const getCommunities = () => {
-    setLoading(true);
-    axiosClient.get(`/showCommunityDetails/${profile_id}`)
-        .then(({ data }) => {
-            setLoading(false);
-            setCommunities(data.data);
-            setReason(data.data.length > 0 ? data.data[0].rejection_reason : '');
-            axiosClient.get(`/showCommunityTime/${profile_id}`)
-                .then(({ data: timeData }) => {
-                    setTime(timeData.data);
-                })
-                .catch(err => {
-                    const response = err.response;
-                    setLoading(false);
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
-                    }
-                });
-        })
-        .catch(err => {
-            const response = err.response;
-            setLoading(false);
-            if (response && response.status === 422) {
-                setErrors(response.data.errors);
-            }
-        });
-};
+        setLoading(true);
+        axiosClient.get(`/showCommunityDetails/${profile_id}`)
+            .then(({ data }) => {
+                setLoading(false);
+                setCommunities(data.data);
+                setReason(data.data.length > 0 ? data.data[0].rejection_reason : '');
+                axiosClient.get(`/showCommunityTime/${profile_id}`)
+                    .then(({ data: timeData }) => {
+                        setTime(timeData.data);
+                    })
+                    .catch(err => {
+                        const response = err.response;
+                        setLoading(false);
+                        if (response && response.status === 422) {
+                            setErrors(response.data.errors);
+                        }
+                    });
+            })
+            .catch(err => {
+                const response = err.response;
+                setLoading(false);
+                if (response && response.status === 422) {
+                    setErrors(response.data.errors);
+                }
+            });
+    };
 
 
     const handleInputChange = (event) => {
@@ -72,24 +72,24 @@ export default function CommunityDetails() {
             };
 
             if ((Communities[0].status === "rejected" || Communities[0].status === "block") && !Communities[0].rejection_reason) {
-                setErrors('Rejection Reason is Mandatory Field');      
-            }else{
+                setErrors('Rejection Reason is Mandatory Field');
+            } else {
                 setErrors('');
                 axiosClient.post(`/addupdateCommunity`, updatedCommunity)
-                .then(() => {
-                    setNotification('Community successfully updated');
-                    this.timer = setTimeout(() => {
-                        window.location = '/community';
-                      }, 1000);
-                })
-                .catch(err => {
-                    const response = err.response;
-                    setLoading(false);
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
-                    }
-                });
-            }   
+                    .then(() => {
+                        setNotification('Community successfully updated');
+                        this.timer = setTimeout(() => {
+                            window.location = '/community';
+                        }, 1000);
+                    })
+                    .catch(err => {
+                        const response = err.response;
+                        setLoading(false);
+                        if (response && response.status === 422) {
+                            setErrors(response.data.errors);
+                        }
+                    });
+            }
         }
     };
 
@@ -97,7 +97,10 @@ export default function CommunityDetails() {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    const community_background_image = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].community_background_image : ''}`;
+    // const community_background_image = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].community_background_image : ''}`;
+    const community_background_image = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].community_image_background : ''}`;
+
+    console.log('backImage', community_background_image);
     const community_image = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].community_image : ''}`;
     const dummy_background_image = `${import.meta.env.VITE_API_BASE_URL}/communitydocument/banner-image.png`;
     const dummy_image = `${import.meta.env.VITE_API_BASE_URL}/communitydocument/dummy-profile-pic.jpg`;
@@ -119,10 +122,27 @@ export default function CommunityDetails() {
                     <form onSubmit={handleSubmit} >
                         <div className="row">
                             <div className="col-lg-12">
-                                {Communities.length > 0 && Communities[0].community_background_image ? (
+                                {
+                                    /*
+                                    Communities.length > 0 && Communities[0].community_image_background ? (
+                                        <div>
+                                            <img className='banner_image' src={Communities[0].community_image_background} alt="Community Background" />
+                                            <a className='open-icon' href={Communities[0].community_image_background} target="_blank" rel="noopener noreferrer">
+                                                <FaExternalLinkAlt /> 
+                                            </a>
+                                        </div>
+                                    ) : (
+                                        <img className='banner_image' src={dummy_background_image} alt="Dummy Image" />
+                                    )
+                                    */
+                                }
+
+
+
+                                {Communities.length > 0 && Communities[0].community_image_background ? (
                                     <div>
-                                        <img className='banner_image' src={Communities[0].community_background_image} alt="Community Background" />
-                                        <a className='open-icon' href={Communities[0].community_background_image} target="_blank" rel="noopener noreferrer">
+                                        <img className='banner_image' src={community_background_image} alt="Community Background" />
+                                        <a className='open-icon' title='view background image' href={community_background_image} target="_blank" rel="noopener noreferrer">
                                             <FaExternalLinkAlt /> {/* Icon */}
                                         </a>
                                     </div>
@@ -151,7 +171,7 @@ export default function CommunityDetails() {
                                 <label>Main Festival</label>
                             </div>
                             <div className="col-lg-9">
-                                <input value={Communities.length > 0 && Communities[0].main_festival_community ? Communities[0].main_festival_community : 'Not Available'} readOnly/>
+                                <input value={Communities.length > 0 && Communities[0].main_festival_community ? Communities[0].main_festival_community : 'Not Available'} readOnly />
                             </div>
                         </div>
                         <div className="row">
@@ -167,7 +187,7 @@ export default function CommunityDetails() {
                                 <label>Schedual Visit</label>
                             </div>
                             <div className="col-lg-9">
-                                <input value={Communities.length > 0 && Communities[0].schedual_visit  ? Communities[0].schedual_visit : 'Not Available'} readOnly />
+                                <input value={Communities.length > 0 && Communities[0].schedual_visit ? Communities[0].schedual_visit : 'Not Available'} readOnly />
                             </div>
                         </div>
                         <div className="row">
@@ -175,7 +195,7 @@ export default function CommunityDetails() {
                                 <label>Location</label>
                             </div>
                             <div className="col-lg-9">
-                                <input value={Communities.length > 0 && Communities[0].location_of_community ? Communities[0].location_of_community : 'Not Available'} readOnly/>
+                                <input value={Communities.length > 0 && Communities[0].location_of_community ? Communities[0].location_of_community : 'Not Available'} readOnly />
                             </div>
                         </div>
                         <div className="row">
@@ -206,39 +226,39 @@ export default function CommunityDetails() {
                             <div className="col-lg-3">
                                 <label>Gallery</label>
                             </div>
-                             <div className="col-lg-9 d-flex mb-2">
-                                    {Communities.length > 0 && Communities[0].upload_pdf ? (
-                                        <a href={pdf} target="_blank" rel="noopener noreferrer" className='rounded highlight text-decoration-none default-bg-clr text-dark input-bdr p-1 mr-3'>View PDF</a>
-                                    ) : (
-                                        <a className='rounded text-decoration-none default-bg-clr text-dark input-bdr p-1 mr-3'>PDF Not Available</a>
-                                    )}
-                                    {Communities.length > 0 && Communities[0].upload_video ? (
-                                        <a href={video} target="_blank" rel="noopener noreferrer" className='rounded highlight text-decoration-none default-bg-clr text-dark input-bdr p-1'>View Video</a>
-                                    ) : (
-                                        <a className='rounded text-decoration-none default-bg-clr text-dark input-bdr p-1'>Video Not Available</a>
-                                    )}
+                            <div className="col-lg-9 d-flex mb-2">
+                                {Communities.length > 0 && Communities[0].upload_pdf ? (
+                                    <a href={pdf} target="_blank" rel="noopener noreferrer" className='rounded highlight text-decoration-none default-bg-clr text-dark input-bdr p-1 mr-3'>View PDF</a>
+                                ) : (
+                                    <a className='rounded text-decoration-none default-bg-clr text-dark input-bdr p-1 mr-3'>PDF Not Available</a>
+                                )}
+                                {Communities.length > 0 && Communities[0].upload_video ? (
+                                    <a href={video} target="_blank" rel="noopener noreferrer" className='rounded highlight text-decoration-none default-bg-clr text-dark input-bdr p-1'>View Video</a>
+                                ) : (
+                                    <a className='rounded text-decoration-none default-bg-clr text-dark input-bdr p-1'>Video Not Available</a>
+                                )}
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-lg-3">
                                 <label>Documents</label>
                             </div>
-                             <div className="col-lg-9 d-flex">
-                                    {Communities.length > 0 && Communities[0].upload_licence01 ? (
-                                        <a href={Licence_front} target="_blank" rel="noopener noreferrer" className='rounded text-decoration-none default-bg-clr text-white p-1 mr-3 highlight'>View Licence Front</a>
-                                    ) : (
-                                        <a className='rounded text-decoration-none default-bg-clr text-dark input-bdr p-1 mr-3'>Licence Front Not Available</a>
-                                    )}
-                                    {Communities.length > 0 && Communities[0].upload_licence02 ? (
-                                        <a href={Licence_back} target="_blank" rel="noopener noreferrer" className='rounded highlight text-decoration-none default-bg-clr text-white p-1 mr-3'>View Licence Back</a>
-                                    ) : (
-                                        <a className='rounded text-decoration-none default-bg-clr text-dark input-bdr p-1 mr-3'>Licence Back Not Available</a>
-                                    )}
-                                    {Communities.length > 0 && Communities[0].upload_qr ? (
-                                        <a href={qr} target="_blank" rel="noopener noreferrer" className='rounded highlight text-decoration-none default-bg-clr text-white p-1'>View QR</a>
-                                    ) : (
-                                        <a className='rounded text-decoration-none default-bg-clr text-dark input-bdr p-1'>QR Not Available</a>
-                                    )}
+                            <div className="col-lg-9 d-flex">
+                                {Communities.length > 0 && Communities[0].upload_licence01 ? (
+                                    <a href={Licence_front} target="_blank" rel="noopener noreferrer" className='rounded text-decoration-none default-bg-clr text-white p-1 mr-3 highlight'>View Licence Front</a>
+                                ) : (
+                                    <a className='rounded text-decoration-none default-bg-clr text-dark input-bdr p-1 mr-3'>Licence Front Not Available</a>
+                                )}
+                                {Communities.length > 0 && Communities[0].upload_licence02 ? (
+                                    <a href={Licence_back} target="_blank" rel="noopener noreferrer" className='rounded highlight text-decoration-none default-bg-clr text-white p-1 mr-3'>View Licence Back</a>
+                                ) : (
+                                    <a className='rounded text-decoration-none default-bg-clr text-dark input-bdr p-1 mr-3'>Licence Back Not Available</a>
+                                )}
+                                {Communities.length > 0 && Communities[0].upload_qr ? (
+                                    <a href={qr} target="_blank" rel="noopener noreferrer" className='rounded highlight text-decoration-none default-bg-clr text-white p-1'>View QR</a>
+                                ) : (
+                                    <a className='rounded text-decoration-none default-bg-clr text-dark input-bdr p-1'>QR Not Available</a>
+                                )}
                             </div>
                         </div>
                         <div className="row mt-3 mb-3 ">
@@ -252,7 +272,7 @@ export default function CommunityDetails() {
                                             <div key={index} className='p-2'>
                                                 <tr className='table-head text-center fw-bold p-1'>{capitalizeFirstLetter(facilityType)}</tr>
                                                 {Communities[0].facility[facilityType].map((facility, idx) => (
-                                                    <tr key={idx}> 
+                                                    <tr key={idx}>
                                                         <td>{facility.key}</td>
                                                         <td>{facility.value}</td>
                                                     </tr>
@@ -271,23 +291,23 @@ export default function CommunityDetails() {
                             </div>
                             <div className="col-lg-9 d-flex">
                                 {Time.length > 0 ? (
-                                             <div className="col-lg-3 d-flex facility-bx">
-                                    <table>
-                                        <thead>
-                                            <tr className="d-flex">
-                                                <th className='table-head text-center fw-bold p-1 mr-1'>Open Time</th>
-                                                <th className='table-head text-center fw-bold p-1'>Close Time</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {Time.map((timeEntry, index) => (
-                                                <tr key={index} className="d-flex">
-                                                    <td className="p-1 w-50 text-center mr-1">{timeEntry.open_time}</td>
-                                                    <td className="p-1 w-50 text-center">{timeEntry.close_time}</td>
+                                    <div className="col-lg-3 d-flex facility-bx">
+                                        <table>
+                                            <thead>
+                                                <tr className="d-flex">
+                                                    <th className='table-head text-center fw-bold p-1 mr-1'>Open Time</th>
+                                                    <th className='table-head text-center fw-bold p-1'>Close Time</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                {Time.map((timeEntry, index) => (
+                                                    <tr key={index} className="d-flex">
+                                                        <td className="p-1 w-50 text-center mr-1">{timeEntry.open_time}</td>
+                                                        <td className="p-1 w-50 text-center">{timeEntry.close_time}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 ) : (
                                     <span>Not Available</span>
@@ -302,17 +322,17 @@ export default function CommunityDetails() {
                             </div>
                             <div className="col-lg-9">
                                 <select className='input-border' value={Communities.length > 0 ? Communities[0].status : ''} onChange={ev => {
-                                        const selectedValue = ev.target.value;
-                                        setCommunities([{ ...Communities[0], status: selectedValue }, ...Communities.slice(1)]);
-                                        setReason(selectedValue === 'rejected' || selectedValue === 'block' ? Communities[0].rejection_reason : ''); // Update reason based on status
-                                        setModalIsOpen(selectedValue === 'rejected' || selectedValue === 'block');
+                                    const selectedValue = ev.target.value;
+                                    setCommunities([{ ...Communities[0], status: selectedValue }, ...Communities.slice(1)]);
+                                    setReason(selectedValue === 'rejected' || selectedValue === 'block' ? Communities[0].rejection_reason : ''); // Update reason based on status
+                                    setModalIsOpen(selectedValue === 'rejected' || selectedValue === 'block');
                                 }}>
                                     <option disabled value="pending">Pending</option>
                                     <option value="approved">Approved</option>
                                     <option value="approved_with_tick">Approve With Tick</option>
                                     <option value="rejected">Rejected</option>
                                     <option value="block">Block</option>
-                                </select> 
+                                </select>
                             </div>
                         </div>
                         {Communities.length > 0 && (Communities[0].status === "rejected" || Communities[0].status === "block") && (
@@ -323,7 +343,7 @@ export default function CommunityDetails() {
                                 <div className="col-lg-9">
                                     {errors &&
                                         <div className="alert">
-                                                <p>{errors}</p>
+                                            <p>{errors}</p>
                                         </div>
                                     }
                                     <input className='input-bdr w-8' required value={Communities[0].rejection_reason} readOnly placeholder="Reason" />
