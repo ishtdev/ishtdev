@@ -1,0 +1,35 @@
+[20-May-2024 13:58:15 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Application" not found in /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/bootstrap/app.php:14
+Stack trace:
+#0 /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/artisan(20): require_once()
+#1 {main}
+  thrown in /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/bootstrap/app.php on line 14
+[20-May-2024 13:59:09 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Application" not found in /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/bootstrap/app.php:14
+Stack trace:
+#0 /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/artisan(20): require_once()
+#1 {main}
+  thrown in /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/bootstrap/app.php on line 14
+[20-May-2024 14:00:00 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Application" not found in /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/bootstrap/app.php:14
+Stack trace:
+#0 /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/artisan(20): require_once()
+#1 {main}
+  thrown in /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/bootstrap/app.php on line 14
+[21-May-2024 05:11:35 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Application" not found in /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/bootstrap/app.php:14
+Stack trace:
+#0 /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/artisan(20): require_once()
+#1 {main}
+  thrown in /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/bootstrap/app.php on line 14
+[21-May-2024 05:13:40 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Application" not found in /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/bootstrap/app.php:14
+Stack trace:
+#0 /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/artisan(20): require_once()
+#1 {main}
+  thrown in /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/bootstrap/app.php on line 14
+[21-May-2024 05:19:50 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Application" not found in /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/bootstrap/app.php:14
+Stack trace:
+#0 /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/artisan(20): require_once()
+#1 {main}
+  thrown in /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/bootstrap/app.php on line 14
+[21-May-2024 05:22:38 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Application" not found in /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/bootstrap/app.php:14
+Stack trace:
+#0 /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/artisan(20): require_once()
+#1 {main}
+  thrown in /home/jsdcuypje7bh/ishtadev.intelliatech.in/ishtadev/bootstrap/app.php on line 14
