@@ -267,7 +267,7 @@ table>tbody>tr>td {
 
 .bg-image {
     background-image: url(/public/bg-image.png);
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .login-signup-form .title {

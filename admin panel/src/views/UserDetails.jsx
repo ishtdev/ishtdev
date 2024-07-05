@@ -173,12 +173,12 @@ export default function UserDetails() {
                             </div>
                              <div className="col-lg-9 d-flex">
                                     {user.kyc_details_doc01 ? (
-                                        <a href={kyc_front} target="_blank" rel="noopener noreferrer" className='text-decoration-none default-bg-clr text-dark input-bdr p-1 mr-3'>View KYC Document Front</a>
+                                        <a href={kyc_front} target="_blank" rel="noopener noreferrer" className='text-decoration-none default-bg-clr text-white highlight input-bdr p-1 mr-3'>View KYC Document Front</a>
                                     ) : (
                                         <a className='text-decoration-none default-bg-clr text-dark input-bdr p-1 mr-3'>KYC Front Document Not Available</a>
                                     )}
                                     {user.kyc_details_doc02 ? (
-                                        <a href={kyc_back} target="_blank" rel="noopener noreferrer" className='text-decoration-none default-bg-clr text-dark input-bdr p-1 mr-3'>View KYC Document Back</a>
+                                        <a href={kyc_back} target="_blank" rel="noopener noreferrer" className='text-decoration-none default-bg-clr text-white highlight input-bdr p-1 mr-3'>View KYC Document Back</a>
                                     ) : (
                                         <a className='text-decoration-none default-bg-clr text-dark input-bdr p-1 mr-3'>KYC Back Document Not Available</a>
                                     )}
