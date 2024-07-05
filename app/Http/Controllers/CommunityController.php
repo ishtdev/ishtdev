@@ -452,15 +452,16 @@ class CommunityController extends Controller
                         }
 
 
-                    } else {
-                        // Handle the case where 'badges' key is missing or not an array
-                        return response()->json([
-                            'code' => 400,
-                            'status' => 'failure',
-                            'message' => 'Invalid badge data structure.',
-                            'data' => (object) [],
-                        ]);
-                    }
+                    } 
+                    // else {
+                    //     // Handle the case where 'badges' key is missing or not an array
+                    //     return response()->json([
+                    //         'code' => 400,
+                    //         'status' => 'failure',
+                    //         'message' => 'Invalid badge data structure.',
+                    //         'data' => (object) [],
+                    //     ]);
+                    // }
                     //-------edit badge ends---------
 
                     return response()->json([
@@ -1575,7 +1576,10 @@ class CommunityController extends Controller
                     'data' => [],
                 ], 404);
             }
-
+           
+            
+            $user_id = Profile::where('id', $history->created_profile_id)->value('user_id');
+          
             $communityHistory = CommunityHistory::where('community_detail_id', $communityId)->where('status', 1)->get();
             if ($communityHistory->isEmpty()) {
                 return response()->json([
@@ -1590,6 +1594,7 @@ class CommunityController extends Controller
             foreach ($communityHistory as $history) {
                 $filteredHistories[] = [
                     'id' => $history->id,
+                    'user_id' => $user_id,
                     'profile_id' => $history->communityDetail->profile_id,
                     'community_detail_id' => $history->community_detail_id,
                     'history' => $history->history,
