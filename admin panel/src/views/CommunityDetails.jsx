@@ -99,8 +99,6 @@ export default function CommunityDetails() {
 
     // const community_background_image = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].community_background_image : ''}`;
     const community_background_image = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].community_image_background : ''}`;
-
-    console.log('backImage', community_background_image);
     const community_image = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].community_image : ''}`;
     const dummy_background_image = `${import.meta.env.VITE_API_BASE_URL}/communitydocument/banner-image.png`;
     const dummy_image = `${import.meta.env.VITE_API_BASE_URL}/communitydocument/dummy-profile-pic.jpg`;

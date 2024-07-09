@@ -46,6 +46,7 @@ use Carbon\Carbon;
 use CommunityArti as GlobalCommunityArti;
 use CommunityDetail as GlobalCommunityDetail;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 
 
 class CommunityController extends Controller
@@ -157,6 +158,7 @@ class CommunityController extends Controller
     public function addupdateCommunity(Request $request)
     {
         try {
+
             $validator = Validator::make($request->all(), [
                 'profile_id' => 'required',
                 'status' => 'nullable',
@@ -164,6 +166,8 @@ class CommunityController extends Controller
                 'name_of_community' => 'nullable',
                 'website_link' => 'nullable|url',
             ]);
+
+
             if ($validator->fails()) {
                 return response()->json([
                     'code' => 400,
@@ -172,6 +176,7 @@ class CommunityController extends Controller
                     'errors' => $validator->errors(),
                 ], 400);
             }
+
             $data = $request->all();
 
             if (isset($data['community_id'])) {
@@ -318,7 +323,6 @@ class CommunityController extends Controller
 
 
 
-
                     //-----------facility update----------
                     $facilityData = isset($data['facilities']) ? json_decode($data['facilities'], true) : [];
                     $community_profile_id = $request->profile_id;
@@ -381,86 +385,85 @@ class CommunityController extends Controller
 
 
                     $badgesData = isset($request['badge']) ? json_decode($request['badge'], true) : [];
-                    // print_r($badgesData);
-                    // die;
-
-                    // print_r($request->has('badges'));
-                    // die;
-
+                    
                     if ($request->has('badge')) {
 
-                        foreach ($badgesData['badges'] as $badgeData) {
+                        if (isset($badgesData['badges'])) {
 
-                            if (!isset($badgeData['badge_id'])) {
-                                return response()->json([
-                                    'code' => 400,
-                                    'status' => 'failure',
-                                    'message' => 'Invalid badge data.',
-                                    'data' => (object) [],
-                                ]);
-                            }
-                            if (isset($badgeData['id'])) {
-                                $badgeExisted = CommunityBadge::where('id', $badgeData['id'])->where('community_id', $communityId)
-                                    ->first();
-                                if ($badgeExisted) {
-                                    $badgeExisted->title = $badgeData['title'] ?? $badgeExisted->title;
-                                    $badgeExisted->badge_id = $badgeData['badge_id'] ?? $badgeExisted->badge_id;
-                                    $badgeExisted->check_in_count = $badgeData['check_in_count'] ?? $badgeExisted->check_in_count;
-                                    $badgeExisted->save();
-                                } else {
-                                    $newBadge = new CommunityBadge();
-                                    $newBadge->title = $badgeData['title'] ?? '';
-                                    $newBadge->community_id = $communityId;
-                                    $newBadge->badge_id = $badgeData['badge_id'];
-                                    $newBadge->check_in_count = $badgeData['check_in_count'] ?? 0;
-                                    $newBadge->save();
-                                }
-                            } else {
-                                $newBadge = new CommunityBadge();
-                                $newBadge->title = $badgeData['title'] ?? '';
-                                $newBadge->community_id = $communityId;
-                                $newBadge->badge_id = $badgeData['badge_id'];
-                                $newBadge->check_in_count = $badgeData['check_in_count'] ?? 0;
-                                $newBadge->save();
-                            }
+                            foreach ($badgesData['badges'] as $badgeData) {
+                                if ($badgeData != null) {
 
-                            $userIdsWithMatchingCheckInCount = UserCheckIn::select('user_id')
-                                ->selectRaw('COUNT(*) as check_in_count')
-                                ->where('community_id', $communityId)
-                                ->groupBy('user_id')
-                                ->having('check_in_count', '>=', $badgeData['check_in_count'])
-                                ->pluck('user_id');
+                                    if (!isset($badgeData['badge_id'])) {
+                                        return response()->json([
+                                            'code' => 400,
+                                            'status' => 'failure',
+                                            'message' => 'Invalid badge data.',
+                                            'data' => (object) [],
+                                        ]);
+                                    }
+                                    if (isset($badgeData['id'])) {
+                                        $badgeExisted = CommunityBadge::where('id', $badgeData['id'])->where('community_id', $communityId)
+                                            ->first();
+                                        if ($badgeExisted) {
+                                            $badgeExisted->title = $badgeData['title'] ?? $badgeExisted->title;
+                                            $badgeExisted->badge_id = $badgeData['badge_id'] ?? $badgeExisted->badge_id;
+                                            $badgeExisted->check_in_count = $badgeData['check_in_count'] ?? $badgeExisted->check_in_count;
+                                            $badgeExisted->save();
+                                        } else {
+                                            $newBadge = new CommunityBadge();
+                                            $newBadge->title = $badgeData['title'] ?? '';
+                                            $newBadge->community_id = $communityId;
+                                            $newBadge->badge_id = $badgeData['badge_id'];
+                                            $newBadge->check_in_count = $badgeData['check_in_count'] ?? 0;
+                                            $newBadge->save();
+                                        }
+                                    } else {
+                                        $newBadge = new CommunityBadge();
+                                        $newBadge->title = $badgeData['title'] ?? '';
+                                        $newBadge->community_id = $communityId;
+                                        $newBadge->badge_id = $badgeData['badge_id'];
+                                        $newBadge->check_in_count = $badgeData['check_in_count'] ?? 0;
+                                        $newBadge->save();
+                                    }
 
-                            foreach ($userIdsWithMatchingCheckInCount as $userId) {
-                                $rewardBadge = CommunityBadge::where('community_id', $communityId)
-                                    ->where('check_in_count', '=', $badgeData['check_in_count'])
-                                    ->whereNull('deleted_at')
-                                    ->first();
-
-                                if ($rewardBadge) {
-                                    $latestCheckIn = UserCheckIn::where('user_id', $userId)
+                                    $userIdsWithMatchingCheckInCount = UserCheckIn::select('user_id')
+                                        ->selectRaw('COUNT(*) as check_in_count')
                                         ->where('community_id', $communityId)
-                                        ->latest()
-                                        ->first();
+                                        ->groupBy('user_id')
+                                        ->having('check_in_count', '>=', $badgeData['check_in_count'])
+                                        ->pluck('user_id');
 
-                                    if ($latestCheckIn) {
-                                        $latestCheckIn->community_badge_id = $rewardBadge->id;
-                                        $latestCheckIn->save();
+                                    foreach ($userIdsWithMatchingCheckInCount as $userId) {
+                                        $rewardBadge = CommunityBadge::where('community_id', $communityId)
+                                            ->where('check_in_count', '=', $badgeData['check_in_count'])
+                                            ->whereNull('deleted_at')
+                                            ->first();
+
+                                        if ($rewardBadge) {
+                                            $latestCheckIn = UserCheckIn::where('user_id', $userId)
+                                                ->where('community_id', $communityId)
+                                                ->latest()
+                                                ->first();
+
+                                            if ($latestCheckIn) {
+                                                $latestCheckIn->community_badge_id = $rewardBadge->id;
+                                                $latestCheckIn->save();
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
-
-
-                    } else {
-                        // Handle the case where 'badges' key is missing or not an array
-                        return response()->json([
-                            'code' => 400,
-                            'status' => 'failure',
-                            'message' => 'Invalid badge data structure.',
-                            'data' => (object) [],
-                        ]);
                     }
+                    // else {
+                    //     // Handle the case where 'badges' key is missing or not an array
+                    //     return response()->json([
+                    //         'code' => 400,
+                    //         'status' => 'failure',
+                    //         'message' => 'Invalid badge data structure.',
+                    //         'data' => (object) [],
+                    //     ]);
+                    // }
                     //-------edit badge ends---------
 
                     return response()->json([
@@ -727,6 +730,8 @@ class CommunityController extends Controller
                 ], 200);
             }
         } catch (\Exception $e) {
+            // Log::error('Exception: ', ['message' => $e->getMessage(), 'line' => $e->getLine(), 'file' => $e->getFile()]);
+
             return response()->json([
                 'code' => 500,
                 'status' => 'error',
@@ -1576,6 +1581,9 @@ class CommunityController extends Controller
                 ], 404);
             }
 
+
+            $user_id = Profile::where('id', $history->created_profile_id)->value('user_id');
+
             $communityHistory = CommunityHistory::where('community_detail_id', $communityId)->where('status', 1)->get();
             if ($communityHistory->isEmpty()) {
                 return response()->json([
@@ -1590,6 +1598,7 @@ class CommunityController extends Controller
             foreach ($communityHistory as $history) {
                 $filteredHistories[] = [
                     'id' => $history->id,
+                    'user_id' => $user_id,
                     'profile_id' => $history->communityDetail->profile_id,
                     'community_detail_id' => $history->community_detail_id,
                     'history' => $history->history,

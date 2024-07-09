@@ -505,7 +505,9 @@ class AuthController extends Controller
     public function update(Request $request)
     {
         try {
-            // echo"<pre>"; print_r($request->all()); die;
+            // echo "<pre>";
+            // print_r($request->all());
+            // die;
             $UserDetails = UserDetails::where('profile_id', $request->profile_id)->first();
             $addressDetails = Address::where('profile_id', $request->profile_id)->first();
             $ProfileDetails = Profile::where('id', $request->profile_id)->first();
@@ -520,11 +522,13 @@ class AuthController extends Controller
             $device_key = '';
             $device_key = User::select('device_key')->where('id', $UserDetails['id'])->first();
             $validatedData = $request->all();
-            $userDetailsData['verification_status'] = isset($validatedData['verification_status']) ? $validatedData['verification_status'] : 
-                                                    ($request->has('verification_status') ? $request->input('verification_status') : $UserDetails['verification_status']);
-            if($request->has('verification_status')){               
+            $userDetailsData['verification_status'] = isset($validatedData['verification_status']) ? $validatedData['verification_status'] :
+                ($request->has('verification_status') ? $request->input('verification_status') : $UserDetails['verification_status']);
 
-                if($validatedData['verification_status'] == 'approved' || $validatedData['verification_status'] == 'rejected'){
+
+            if ($request->has('verification_status')) {
+
+                if ($validatedData['verification_status'] == 'approved' || $validatedData['verification_status'] == 'rejected') {
                     $chechInNotification = new NotificationController();
                     $to = $device_key['device_key'];
                     $notification = [
@@ -535,17 +539,25 @@ class AuthController extends Controller
                         "notication" => "true",
                         "source" => "CheckIn",
                     ];
-                     $response = $chechInNotification->sendNotificationToOne($to, $notification, $data);
+                    $response = $chechInNotification->sendNotificationToOne($to, $notification, $data);
                 }
+            } else {
+                // die("else");
+                $userDetailsData['verification_status'] = 'pending';
             }
-            $userDetailsData['register_business_name'] = isset($validatedData['register_business_name']) || $request->has('register_business_name') ? $validatedData['register_business_name'] :  $UserDetails['register_business_name'];
+
+            // echo "<pre>";
+            // print_r($userDetailsData);
+            // die;
+            // die("out");
+            $userDetailsData['register_business_name'] = isset($validatedData['register_business_name']) || $request->has('register_business_name') ? $validatedData['register_business_name'] : $UserDetails['register_business_name'];
             $userDetailsData['verified'] = ($userDetailsData['verification_status'] == 'approved') ? 'true' : 'false';
-            $userDetailsData['invalidate_reason'] = isset($validatedData['invalidate_reason']) || $request->has('invalidate_reason') ? $validatedData['invalidate_reason'] :  $UserDetails['invalidate_reason'];
-            $userDetailsData['full_name'] = isset($validatedData['full_name']) || $request->has('full_name') ? $validatedData['full_name'] :  $UserDetails['full_name'];
-            $userDetailsData['email'] = isset($validatedData['email']) || $request->has('email') ? $validatedData['email'] :  $UserDetails['email'];
+            $userDetailsData['invalidate_reason'] = isset($validatedData['invalidate_reason']) || $request->has('invalidate_reason') ? $validatedData['invalidate_reason'] : $UserDetails['invalidate_reason'];
+            $userDetailsData['full_name'] = isset($validatedData['full_name']) || $request->has('full_name') ? $validatedData['full_name'] : $UserDetails['full_name'];
+            $userDetailsData['email'] = isset($validatedData['email']) || $request->has('email') ? $validatedData['email'] : $UserDetails['email'];
             $userDetailsData['religion'] = isset($validatedData['religion']) || $request->has('religion') ? $validatedData['religion'] : $UserDetails['religion'];
             $userDetailsData['varna'] = isset($validatedData['varna']) || $request->has('varna') ? $validatedData['varna'] : $UserDetails['varna'];
-            $userDetailsData['gotra'] = isset($validatedData['gotra']) || $request->has('gotra') ? $validatedData['gotra'] : $UserDetails['gotra'] ;
+            $userDetailsData['gotra'] = isset($validatedData['gotra']) || $request->has('gotra') ? $validatedData['gotra'] : $UserDetails['gotra'];
             $userDetailsData['ishtdev'] = isset($validatedData['ishtdev']) || $request->has('ishtdev') ? $validatedData['ishtdev'] : $UserDetails['ishtdev'];
             $userDetailsData['dob'] = isset($validatedData['dob']) || $request->has('dob') ? $validatedData['dob'] : $UserDetails['dob'];
             $userDetailsData['kul_devta_devi'] = isset($validatedData['kul_devta_devi']) || $request->has('kul_devta_devi') ? $validatedData['kul_devta_devi'] : $UserDetails['kul_devta_devi'];
@@ -555,7 +567,7 @@ class AuthController extends Controller
             $userDetailsData['speciality_pooja'] = isset($validatedData['speciality_pooja']) || $request->has('speciality_pooja') ? $validatedData['speciality_pooja'] : $UserDetails['speciality_pooja'];
             $userDetailsData['pravara'] = isset($validatedData['pravara']) || $request->has('pravara') ? $validatedData['pravara'] : $UserDetails['pravara'];
             $userDetailsData['ved'] = isset($validatedData['ved']) || $request->has('ved') ? $validatedData['ved'] : $UserDetails['ved'];
-            $userDetailsData['upved'] = isset($validatedData['upved']) || $request->has('upved') ? $validatedData['upved'] : $UserDetails['upved'] ;
+            $userDetailsData['upved'] = isset($validatedData['upved']) || $request->has('upved') ? $validatedData['upved'] : $UserDetails['upved'];
             $userDetailsData['charanas'] = isset($validatedData['charanas']) || $request->has('charanas') ? $validatedData['charanas'] : $UserDetails['charanas'];
             $userDetailsData['mukha'] = isset($validatedData['mukha']) || $request->has('mukha') ? $validatedData['mukha'] : $UserDetails['mukha'];
             $userDetailsData['become_pandit'] = isset($validatedData['become_pandit']) || $request->has('become_pandit') ? $validatedData['become_pandit'] : $UserDetails['become_pandit'];
@@ -567,7 +579,7 @@ class AuthController extends Controller
             $addressDetailsData['postal_code'] = isset($validatedData['postal_code']) || $request->has('postal_code') ? $validatedData['postal_code'] : $addressDetails['postal_code'];
             $addressDetailsData['country'] = isset($validatedData['country']) || $request->has('country') ? $validatedData['country'] : $addressDetails['country'];
 
-            
+
             // convert to business
 
             $userDetailsData['is_business_profile'] = (
@@ -580,9 +592,11 @@ class AuthController extends Controller
                 $userDetailsData['business_verification_status'] = $validatedData['business_verification_status'];
             }
 
-            if (isset($validatedData['business_verification_status']) &&
+            if (
+                isset($validatedData['business_verification_status']) &&
                 $request->has('business_verification_status') &&
-                $validatedData['business_verification_status'] === 'rejected') {
+                $validatedData['business_verification_status'] === 'rejected'
+            ) {
                 $userDetailsData['business_invalidate_reason'] = $validatedData['business_invalidate_reason'];
             }
 
@@ -599,10 +613,10 @@ class AuthController extends Controller
                         "notication" => "true",
                         "source" => "CheckIn",
                     ];
-                     $response = $chechInNotification->sendNotificationToOne($to, $notification, $notificationData);
+                    $response = $chechInNotification->sendNotificationToOne($to, $notification, $notificationData);
                 }
             }
-            
+
             $userDetailsData['business_city'] = $validatedData['business_city'] ?? $UserDetails['business_city'] ?? null;
             $userDetailsData['business_state'] = $validatedData['business_state'] ?? $UserDetails['business_state'] ?? null;
             $userDetailsData['business_pincode'] = $validatedData['business_pincode'] ?? $UserDetails['business_pincode'] ?? null;
@@ -616,7 +630,7 @@ class AuthController extends Controller
                 $filename = $file->getClientOriginalName();
                 $file->move(base_path() . '/public/business_doc/', $filename);
                 $userDetailsData['business_doc'] = $validatedData['business_doc'] = 'business_doc/' . $filename;
-                
+
                 if (isset($userDetailsData['business_doc']) && $device_key) {
                     $chechInNotification = new NotificationController();
                     $to = $device_key['device_key'];
@@ -628,8 +642,8 @@ class AuthController extends Controller
                         "notication" => "true",
                         "source" => "CheckIn",
                     ];
-               
-                     $response = $chechInNotification->sendNotificationToOne($to, $notification, $data);
+
+                    $response = $chechInNotification->sendNotificationToOne($to, $notification, $data);
                     // echo"<pre>"; print_r($response); die;
                 }
 
@@ -656,10 +670,10 @@ class AuthController extends Controller
                 }
 
                 $device_key = User::select('device_key')->where('id', $UserDetails['id'])->first();
-               
+
                 $chechInNotification = new NotificationController();
                 $to = $device_key['device_key'];
-                
+
                 $notification = [
                     "title" => 'Documents is Uploded successfully',
                     "body" => 'Will get back to you after Verification',
@@ -680,19 +694,19 @@ class AuthController extends Controller
             if ($request->hasFile('profile_picture')) {
                 $file = $request->file('profile_picture');
                 $filename = $file->getClientOriginalName();
-                $file->move(base_path().'/public/images/', $filename);
+                $file->move(base_path() . '/public/images/', $filename);
                 $userDetailsData['profile_picture'] = $validatedData['profile_picture'] = 'images/' . $filename;
             }
             if ($request->hasFile('kyc_details_doc01')) {
                 $file = $request->file('kyc_details_doc01');
                 $filename = $file->getClientOriginalName();
-                $file->move(base_path().'/public/kycdocument/', $filename);
+                $file->move(base_path() . '/public/kycdocument/', $filename);
                 $userDetailsData['kyc_details_doc01'] = $validatedData['kyc_details_doc01'] = 'kycdocument/' . $filename;
             }
             if ($request->hasFile('kyc_details_doc02')) {
                 $file = $request->file('kyc_details_doc02');
                 $filename = $file->getClientOriginalName();
-                $file->move(base_path().'/public/kycdocument/', $filename);
+                $file->move(base_path() . '/public/kycdocument/', $filename);
                 $userDetailsData['kyc_details_doc02'] = $validatedData['kyc_details_doc02'] = 'kycdocument/' . $filename;
             }
             // echo"<pre>"; print_r($userDetailsData); die;
@@ -1518,8 +1532,10 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'user' => array("following_profile_details" => $this->processObject($following_user_details),
-                    "followed_profile_details" => $this->processObject($followed_user_details)),
+                'user' => array(
+                    "following_profile_details" => $this->processObject($following_user_details),
+                    "followed_profile_details" => $this->processObject($followed_user_details)
+                ),
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -1560,8 +1576,10 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'user' => array("following_profile_details" => $this->processObject($following_user_details),
-                    "unfollowed_profile_details" => $this->processObject($unfollowed_user_details)),
+                'user' => array(
+                    "following_profile_details" => $this->processObject($following_user_details),
+                    "unfollowed_profile_details" => $this->processObject($unfollowed_user_details)
+                ),
             ]);
 
         } catch (\Exception $e) {
@@ -1662,8 +1680,10 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'user' => array("following_user_details" => $this->processObject($following_user_details),
-                    "unfollowed_user_details" => $this->processObject($unfollowed_user_details)),
+                'user' => array(
+                    "following_user_details" => $this->processObject($following_user_details),
+                    "unfollowed_user_details" => $this->processObject($unfollowed_user_details)
+                ),
             ]);
         } catch (\Exception $e) {
             return response()->json([
