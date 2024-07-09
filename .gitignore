@@ -12,9 +12,9 @@
 /public/firebase/fcm.json
 /storage/*.key
 /vendor
-# /config/app.php
-# .env
-# /admin panel/.env
+/config/app.php
+.env
+/admin panel/.env
 .env.backup
 .env.production
 .phpunit.result.cache
