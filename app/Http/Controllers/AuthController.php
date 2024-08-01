@@ -784,6 +784,8 @@ class AuthController extends Controller
     {
         try {
             $userTypeId = Profile::select('user_type_id')->where('id', $request->profile_id)->first();
+            $postCount = Post::where('profile_id', $request->profile_id)->where('status',1)->count();
+
             if (!$userTypeId) {
                 return response()->json([
                     'code' => 404,
@@ -802,7 +804,7 @@ class AuthController extends Controller
                     ->count();
                 $countFollow = Follows::where('following_profile_id', $request->profile_id)->count();
                 $countFollowing = Follows::where('followed_profile_id', $request->profile_id)->count();
-                $postCount = Post::where('profile_id', $request->profile_id)->count();
+                // $postCount = Post::where('profile_id', $request->profile_id)->count();
                 $getuserType = Profile::select('name')
                     ->join('user_type as ut', 'profile.user_type_id', '=', 'ut.id')
                     ->where('profile.id', $request->profile_id)
@@ -835,7 +837,7 @@ class AuthController extends Controller
                     ->count();
                 $countFollow = Follows::where('following_profile_id', $request->profile_id)->count();
                 $countFollowing = Follows::where('followed_profile_id', $request->profile_id)->count();
-                $postCount = Post::where('profile_id', $request->profile_id)->count();
+                // $postCount = Post::where('profile_id', $request->profile_id)->count();
                 $getuserType = Profile::select('name')
                     ->join('user_type as ut', 'profile.user_type_id', '=', 'ut.id')
                     ->where('profile.id', $request->profile_id)
@@ -887,7 +889,7 @@ class AuthController extends Controller
                     ->count();
                 $countFollow = Follows::where('following_profile_id', $request->profile_id)->count();
                 $countFollowing = Follows::where('followed_profile_id', $request->profile_id)->count();
-                $postCount = Post::where('profile_id', $request->profile_id)->count();
+                // $postCount = Post::where('profile_id', $request->profile_id)->count();
                 $getuserType = Profile::select('name')
                     ->join('user_type as ut', 'profile.user_type_id', '=', 'ut.id')
                     ->where('profile.id', $request->profile_id)

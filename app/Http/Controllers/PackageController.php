@@ -417,7 +417,9 @@ class PackageController extends Controller
                 }])
                 ->with(['profileDetail' => function ($query) {
                     $query->select('id', 'profile_id', 'full_name', 'profile_picture', 'verified', 'become_pandit');
-                }])->get();
+                }])
+                ->orderBy('created_at', 'desc')
+                ->get();
 
             $transaction->each(function ($transaction) {
                 $transaction->makeHidden('updated_at');
@@ -513,10 +515,18 @@ class PackageController extends Controller
     public function getMyBoostPost($userProfileId)
     {
         try {
+            // changed by md
+            // $userPackages = UserPackage::where('profile_id', $userProfileId)
+            //     ->with('postDetail.postRelatedData')
+            //     ->with('profileDetail')
+            //     ->get();
             $userPackages = UserPackage::where('profile_id', $userProfileId)
+                ->whereHas('postDetail')
                 ->with('postDetail.postRelatedData')
                 ->with('profileDetail')
+                ->orderBy('created_at', 'desc')
                 ->get();
+
 
             $filteredPackages = $userPackages->map(function ($package) {
                 $postDetail = $package->postDetail;
