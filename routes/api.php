@@ -44,7 +44,8 @@ Route::middleware(['jwt.verify'])->group(function () {
 
 	Route::post('profiles', [AuthController::class, 'update']);
     Route::post('userProfile', [AuthController::class, 'show']);
-    Route::post('userProfile/{profileId}', [AuthController::class, 'showProfile']);
+  //Route::post('userProfile/{profileId}', [AuthController::class, 'showProfile']);
+
     Route::post('/user/follow/{userToFollow}',  [AuthController::class, 'follow']);
     Route::delete('/user/unfollow/{userToUnfollow}', [AuthController::class, 'unfollow']);
     Route::post('/user/getfollowing', [AuthController::class, 'showAllfollowed']);
