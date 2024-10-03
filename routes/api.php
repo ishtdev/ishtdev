@@ -1,24 +1,20 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\AdminAuthController;
-use App\Http\Controllers\API\PanditController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\WishlistController;
-use App\Http\Controllers\StoryController;
-use App\Http\Controllers\BusinessController;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\RewardController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\LocationController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\HashtagMasterController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\ReligionController;
-use App\Http\Controllers\SearchController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\ReligionController;
+use App\Http\Controllers\RewardController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\StoryController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\WishlistController;
+use Illuminate\Support\Facades\Route;
 
 Route::post('/otp', [AuthController::class, 'otp']);
 Route::post('/sendOtp', [AuthController::class, 'sendOtp']);
@@ -38,25 +34,26 @@ Route::post('/sendNotificationToOne', [NotificationController::class, 'sendNotif
 Route::post('/sendNotificationWithPost', [NotificationController::class, 'sendNotificationWithPost']);
 
 Route::middleware(['jwt.verify'])->group(function () {
-	Route::get('/protected', function () {
+    Route::get('/protected', function () {
         return response()->json(['message' => 'This route is protected by JWT authentication. You need a valid token to access it.']);
     });
 
-	Route::post('profiles', [AuthController::class, 'update']);
+    Route::post('profiles', [AuthController::class, 'update']);
     Route::post('userProfile', [AuthController::class, 'show']);
-  //Route::post('userProfile/{profileId}', [AuthController::class, 'showProfile']);
+    // use for admin pannel
+    Route::post('userProfile/{profileId}', [AuthController::class, 'showProfile']);
 
-    Route::post('/user/follow/{userToFollow}',  [AuthController::class, 'follow']);
+    Route::post('/user/follow/{userToFollow}', [AuthController::class, 'follow']);
     Route::delete('/user/unfollow/{userToUnfollow}', [AuthController::class, 'unfollow']);
     Route::post('/user/getfollowing', [AuthController::class, 'showAllfollowed']);
     Route::post('/user/getfollow', [AuthController::class, 'showAllfollowing']);
     Route::post('/user/removefollower', [AuthController::class, 'removefollower']);
     Route::post('/uniqueFullName', [AuthController::class, 'uniqueFullName']);
 
-	Route::post('/posts', [PostController::class, 'getPosts']);
-	Route::get('/post/{id}', [PostController::class, 'show']);
-	Route::get('/user-posts/{profileId}', [PostController::class, 'showUserPosts']);
-	Route::post('/post/store', [PostController::class, 'store']);
+    Route::post('/posts', [PostController::class, 'getPosts']);
+    Route::get('/post/{id}', [PostController::class, 'show']);
+    Route::get('/user-posts/{profileId}', [PostController::class, 'showUserPosts']);
+    Route::post('/post/store', [PostController::class, 'store']);
     Route::post('/likePost', [PostController::class, 'likePost']);
     Route::post('/getallpostbyHashtag', [PostController::class, 'getallpostbyHashtag']);
     Route::delete('/delete-post/{postId}', [PostController::class, 'deletePost']);
@@ -128,7 +125,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     //Get all Business
 
     Route::get('/showAllBusiness', [UserController::class, 'showAllBusinesslist']);
-    
+
     Route::get('/green-tick-request', [UserController::class, 'greenTickRequest']);
     Route::post('/addupdate-package', [PackageController::class, 'createPackage']);
     Route::get('/get-all-package', [PackageController::class, 'getPackage']);
@@ -140,14 +137,12 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::get('/boost-request-detail/{boost_id}', [PackageController::class, 'getBoostRequestDetail']);
     Route::get('/get-my-boost-post/{profile_id}', [PackageController::class, 'getMyBoostPost']);
     Route::get('/get-all-boost-post', [PackageController::class, 'getAllBoostPost']);
-    
+
     Route::post('/generate-invoice/{boost_id}', [PackageController::class, 'generateInvoice']);
 
     // reported post
     Route::get('/get-all-reported-post', [UserController::class, 'getAllReportedPost']);
     Route::get('/get-reported-post/{id}', [UserController::class, 'getReportedPost']);
-
-
 
     Route::get('/get-amenities', [RewardController::class, 'getAmenities']);
 
@@ -156,6 +151,5 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('/addupdate-amenities', [RewardController::class, 'addupdateAmenities']);
     Route::delete('/delete-amenity/{amenity_id}', [RewardController::class, 'deleteAmenity']);
     Route::get('/restore-reported-post/{post_id}', [RewardController::class, 'restoreReportedPost']);
-    
-});
 
+});
