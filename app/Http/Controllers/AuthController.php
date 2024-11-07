@@ -11,6 +11,7 @@ use App\Models\MobileOtps;
 use App\Models\Post;
 use App\Models\Profile;
 use App\Models\User;
+use App\Models\UserCheckIn;
 use App\Models\UserDetails;
 use Carbon\Carbon;
 use DB;
@@ -297,7 +298,6 @@ class AuthController extends Controller
                 'message' => 'OTP Verified Successfully',
                 'data' => $responseData,
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'code' => 500,
@@ -522,8 +522,7 @@ class AuthController extends Controller
             $device_key = '';
             $device_key = User::select('device_key')->where('id', $UserDetails['id'])->first();
             $validatedData = $request->all();
-            $userDetailsData['verification_status'] = isset($validatedData['verification_status']) ? $validatedData['verification_status'] :
-                ($request->has('verification_status') ? $request->input('verification_status') : $UserDetails['verification_status']);
+            $userDetailsData['verification_status'] = isset($validatedData['verification_status']) ? $validatedData['verification_status'] : ($request->has('verification_status') ? $request->input('verification_status') : $UserDetails['verification_status']);
 
 
             if ($request->has('verification_status')) {
@@ -646,7 +645,6 @@ class AuthController extends Controller
                     $response = $chechInNotification->sendNotificationToOne($to, $notification, $data);
                     // echo"<pre>"; print_r($response); die;
                 }
-
             }
             // end convert to business
 
@@ -782,10 +780,11 @@ class AuthController extends Controller
      */
     public function show(Request $request)
     {
+
         try {
             $userTypeId = Profile::select('user_type_id')->where('id', $request->profile_id)->first();
-            
-            $postCount = Post::where('profile_id', $request->profile_id)->where('status',1)->count();
+            // echo"<pre>"; print_r($userTypeId->toArray()); die;
+            $postCount = Post::where('profile_id', $request->profile_id)->where('status', 1)->count();
 
             if (!$userTypeId) {
                 return response()->json([
@@ -806,7 +805,7 @@ class AuthController extends Controller
                 $countFollow = Follows::where('following_profile_id', $request->profile_id)->count();
                 $countFollowing = Follows::where('followed_profile_id', $request->profile_id)->count();
                 $postCount = Post::where('profile_id', $request->profile_id)->count();
-                
+
                 $getuserType = Profile::select('name')
                     ->join('user_type as ut', 'profile.user_type_id', '=', 'ut.id')
                     ->where('profile.id', $request->profile_id)
@@ -874,6 +873,7 @@ class AuthController extends Controller
                     ]);
                 }
             } elseif ($userTypeId['user_type_id'] == "3") {
+
                 $CommunityDetails = CommunityDetail::where('profile_id', $request->profile_id)->get();
 
                 if (!$CommunityDetails) {
@@ -899,6 +899,10 @@ class AuthController extends Controller
                 $userTypename = $getuserType->name;
                 $communityData = $CommunityDetails->first();
                 $liveArtiUrl = CommunityArti::where('community_detail_id', $communityData->id)->first()->live_arti_link ?? null;
+                
+
+                $visitCount = UserCheckIn::where('community_id',$communityData->id)->count();
+                // echo"<pre>"; print_r($visitCount); die;
 
                 return response()->json([
                     'code' => 200,
@@ -927,7 +931,7 @@ class AuthController extends Controller
                         'postCount' => $postCount,
                         'userTypename' => $userTypename,
                         'loggedIn' => auth()->user()->id == $userId ? "true" : "false",
-                        'visitCount' => 0,
+                        'visitCount' =>$visitCount,
                         'donationCount' => 0,
                     ),
                 ]);
@@ -945,11 +949,11 @@ class AuthController extends Controller
 
     public function showProfile($profile_id)
     {
-
         // echo"hello"; echo $profile_id; die;
         try {
             $userTypeId = Profile::select('user_type_id')->where('id', $profile_id)->first();
-           
+
+
             if (!$userTypeId) {
                 return response()->json([
                     'code' => 404,
@@ -1529,7 +1533,6 @@ class AuthController extends Controller
                         // echo $response;die();
                         //-------follow community channel end----------
                     }
-
                 }
             } elseif ($user_type_id['user_type_id'] == 1 || $user_type_id['user_type_id'] == 2) {
                 $userToFollowId = Profile::select('user_id')->where('id', $profileID)->first();
@@ -1588,7 +1591,6 @@ class AuthController extends Controller
                     "unfollowed_profile_details" => $this->processObject($unfollowed_user_details)
                 ),
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'code' => 500,
@@ -1815,7 +1817,6 @@ class AuthController extends Controller
                 'status' => 'success',
                 'user' => array("following_user_details" => $followed),
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'code' => 500,
@@ -1946,7 +1947,6 @@ class AuthController extends Controller
                 'status' => 'success',
                 'user' => array("following_user_details" => $followed),
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'code' => 500,
@@ -2171,5 +2171,4 @@ class AuthController extends Controller
             ], 500);
         }
     }
-
 }
