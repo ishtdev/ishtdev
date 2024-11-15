@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axiosClient from "../axios-client.js";
 import TableHeadLayout from '../componenets/TableHeadLayout.jsx';
 
-export default function Community() {
+export default function CommunityTransfer() {
   const [communities, setCommunities] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
