@@ -1,6 +1,6 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import Community from "./views/Community.jsx";
-import Community from "./views/CommunityTransfer.jsx";
+import CommunityTransfer from "./views/CommunityTransfer.jsx";
 import Business from "./views/Business.jsx";
 import BusinessDetails from "./views/BusinessDetails.jsx";
 import User from "./views/User.jsx";
