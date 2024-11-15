@@ -76,7 +76,7 @@ const router = createBrowserRouter([
                 element: <Community />
             },
             {
-                path: "/community",
+                path: "/communityTransfer",
                 element: <CommunityTransfer />
             },
             {
