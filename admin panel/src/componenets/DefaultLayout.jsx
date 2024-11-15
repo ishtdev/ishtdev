@@ -29,7 +29,7 @@ export default function DefaultLayout() {
         <Link to='/dashboard'>Dashboard</Link>
         <Link to='/user'>Pandit Verification</Link>
         <Link to='/Community'>Community Verification</Link>
-           <Link to='/Community'>Community Transfer</Link>
+           <Link to='/CommunityTransfer'>Community Transfer</Link>
         <Link to='/wishlist'>Wishlist</Link>
         <Link to='/business'>Business Verification</Link>
         <Link to='/green-tick'>User Verification</Link>
