@@ -10,6 +10,7 @@ import DefaultLayout from "./componenets/DefaultLayout.jsx";
 import GuestLayout from "./componenets/GuestLayout.jsx";
 import UserDetails from "./views/UserDetails.jsx";
 import CommunityDetails from "./views/CommunityDetails.jsx";
+import CommunityTransferDetails from "./views/CommunityTransferDetails.jsx";
 import VerifyAdmin from "./views/VerifyAdmin.jsx";
 import VerifyOtp from "./views/VerifyOtp.jsx";
 import CommunityShare from "./views/CommunityShare.jsx";
@@ -82,6 +83,10 @@ const router = createBrowserRouter([
             {
                 path: '/community/:profile_id',
                 element: <CommunityDetails />
+            },
+            {
+                path: '/communityTransfer/:profile_id',
+                element: <CommunityTransferDetails />
             },
             {
                 path: '/wishlist',
