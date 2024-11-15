@@ -92,7 +92,7 @@ export default function Community() {
               <th>Created On</th>
               <th>Created At</th>
               <th>Status</th>
-              <th>Actions ddd</th>
+              <th>Actions</th>
             </tr>
           </thead>
           {loading ? (
@@ -116,7 +116,7 @@ export default function Community() {
                     {capitalizeFirstLetter(c.status)}
                   </td>
                   <td>
-                    <Link className="btn-custom" to={'/community/' + c.profile_id}>View</Link>
+                    <Link className="btn-custom" to={'/community/' + c.profile_id}>Transfer</Link>
                   </td>
                 </tr>
               ))}
