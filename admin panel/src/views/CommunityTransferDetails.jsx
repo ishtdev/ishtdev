@@ -167,7 +167,7 @@ export default function CommunityDetails() {
                          <div className="row">
                         <input type='hidden' value={Communities.id || ''} name='id' />
                         <div className="col-lg-3">
-                            <label htmlFor='Communities'>User Name</label>
+                            <label htmlFor='Communities'> Enter User Phone</label>
                         </div>
                          <div className="col-lg-9">
                             <input type='text' className='package-width input-border' id='user_phone' name='user_phone' placeholder='Enter phone number' />
