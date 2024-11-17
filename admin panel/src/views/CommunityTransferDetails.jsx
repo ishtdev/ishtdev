@@ -165,19 +165,19 @@ export default function CommunityDetails() {
                             </div>
                         </div>
                          <div className="row">
-                        <input type='hidden' value={amenity.id || ''} name='id' />
+                        <input type='hidden' value={Communities.id || ''} name='id' />
                         <div className="col-lg-3">
-                            <label htmlFor='amenity_name'>Amenity Name</label>
+                            <label htmlFor='Communities'>User Name</label>
                         </div>
                         <div className="col-lg-9">
                             <input
                                 type='text'
                                 className='package-width input-border'
-                                id='amenity_name'
-                                name='amenity_name'
-                                value={amenity.amenity_name || ''}
-                                onChange={(e) => setAmenity({ ...amenity, amenity_name: e.target.value })}
-                                placeholder='Enter Amenity Name'
+                                id='user_phone'
+                                name='user_phone'
+                                value={Communities.user_phone || ''}
+                                onChange={(e) => setAmenity({ ...Communities, user_phone: e.target.value })}
+                                placeholder='Enter User phonne'
                             />
                         </div>
                     </div>
