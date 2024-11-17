@@ -170,7 +170,7 @@ export default function CommunityDetails() {
                             <label htmlFor='Communities'> Enter User Phone</label>
                         </div>
                          <div className="col-lg-9">
-                            <input type='text' className='package-width input-border' id='user_phone' name='user_phone' placeholder='Enter phone number' />
+                            <input type='number' className='package-width input-border' id='user_phone' name='user_phone' placeholder='Enter phone number' />
                         </div>
                     </div>
                         
