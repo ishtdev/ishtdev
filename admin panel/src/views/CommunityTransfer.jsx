@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axiosClient from "../axios-client.js";
 import TableHeadLayout from '../componenets/TableHeadLayout.jsx';
 
-export default function CommunityTransfer() {
+export default function Community() {
   const [communities, setCommunities] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,7 +92,7 @@ export default function CommunityTransfer() {
               <th>Created On</th>
               <th>Created At</th>
               <th>Status</th>
-              <th>Actions</th>
+              <th>Actions bdgdgdg</th>
             </tr>
           </thead>
           {loading ? (
