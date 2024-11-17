@@ -5,7 +5,7 @@ import { useStateContext } from "../context/ContextProvider.jsx";
 import Modal from 'react-modal';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 
-export default function CommunityTransferDetails() {
+export default function Community() {
     let { profile_id } = useParams();
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [reason, setReason] = useState('');
