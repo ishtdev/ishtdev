@@ -164,14 +164,23 @@ export default function CommunityDetails() {
                                 <p className='default-txt-clr' readOnly >{Communities.length > 0 && Communities[0].short_description ? Communities[0].short_description : ''}</p>
                             </div>
                         </div>
-                        <div className="row">
-                            <div className="col-lg-3">
-                                <label>User</label>
-                            </div>
-                            <div className="col-lg-9">
-                                <input  type='text' value=''  />
-                            </div>
+                         <div className="row">
+                        <input type='hidden' value={amenity.id || ''} name='id' />
+                        <div className="col-lg-3">
+                            <label htmlFor='amenity_name'>Amenity Name</label>
                         </div>
+                        <div className="col-lg-9">
+                            <input
+                                type='text'
+                                className='package-width input-border'
+                                id='amenity_name'
+                                name='amenity_name'
+                                value={amenity.amenity_name || ''}
+                                onChange={(e) => setAmenity({ ...amenity, amenity_name: e.target.value })}
+                                placeholder='Enter Amenity Name'
+                            />
+                        </div>
+                    </div>
                         
                         <button type="submit" className="btn-custom">Update</button>
                     </form>
