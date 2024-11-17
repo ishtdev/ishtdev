@@ -175,8 +175,7 @@ export default function CommunityDetails() {
                                 className='package-width input-border'
                                 id='user_phone'
                                 name='user_phone'
-                                value={Communities.user_phone || ''}
-                                onChange={(e) => setAmenity({ ...Communities, user_phone: e.target.value })}
+                                value= ''
                                 placeholder='Enter User phonne'
                             />
                         </div>
