@@ -169,15 +169,8 @@ export default function CommunityDetails() {
                         <div className="col-lg-3">
                             <label htmlFor='Communities'>User Name</label>
                         </div>
-                        <div className="col-lg-9">
-                            <input
-                                type='text'
-                                className='package-width input-border'
-                                id='user_phone'
-                                name='user_phone'
-                                value= ''
-                                placeholder='Enter User phonne'
-                            />
+                         <div className="col-lg-9">
+                            <input type='text' className='package-width input-border' id='user_phone' name='user_phone' placeholder='Enter phone number' />
                         </div>
                     </div>
                         
