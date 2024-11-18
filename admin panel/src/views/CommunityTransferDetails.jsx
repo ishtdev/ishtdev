@@ -50,14 +50,14 @@ export default function CommunityDetails() {
     const handleSubmit = (ev) => {
         ev.preventDefault();
          const formErrors = {};
-        // if (Communities.length > 0 && Communities[0].id) {
-        //     const updatedCommunity = {
-        //         ...Communities[0],
-        //         profile_id: profile_id,
-        //         community_id: Communities[0].id,
-        //         mobile_number:mobile_number
+    if (Communities.length > 0 && Communities[0].id) {
+            const updatedCommunity = {
+             ...Communities[0],
+                profile_id: profile_id,
+         community_id: Communities[0].id,
+                 mobile_number:mobile_number
                 
-        //     };
+            };
          const formData = new FormData(ev.target);
         const updatedAmenity = Object.fromEntries(formData.entries());
 
