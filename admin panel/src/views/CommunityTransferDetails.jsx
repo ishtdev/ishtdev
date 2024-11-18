@@ -8,7 +8,7 @@ import { FaExternalLinkAlt } from 'react-icons/fa';
 export default function CommunityDetails() {
     let { profile_id } = useParams();
     const [modalIsOpen, setModalIsOpen] = useState(false);
-  //  const [reason, setReason] = useState('');
+   const [reason, setReason] = useState('');
     const [mobile_number, setReason] = useState('');
     const [errors, setErrors] = useState(null);
     const { setNotification } = useStateContext()
@@ -53,14 +53,14 @@ export default function CommunityDetails() {
         setReason(event.target.value);
     };
 
-    // const handleEditReason = () => {
-    //     setErrors('');
-    //     setModalIsOpen(true);
-    // };
+     const handleEditReason = () => {
+     setErrors('');
+     setModalIsOpen(true);
+     };
 
     const handleSaveReason = () => {
         setCommunities([{ ...Communities[0], mobile_number: mobile_number }, ...Communities.slice(1)]);
-       // setModalIsOpen(false);
+        setModalIsOpen(false);
     };
 
     const handleSubmit = (ev) => {
