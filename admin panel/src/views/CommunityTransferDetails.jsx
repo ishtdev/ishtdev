@@ -153,7 +153,7 @@ export default function CommunityDetails() {
                         </div>
                          <div className="col-lg-9">
                             <input
-    type="text"
+    type="hidden"
     className="package-width input-border"
     id="community_id"
     name="community_id"
