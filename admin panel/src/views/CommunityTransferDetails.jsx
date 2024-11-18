@@ -8,7 +8,8 @@ import { FaExternalLinkAlt } from 'react-icons/fa';
 export default function CommunityDetails() {
     let { profile_id } = useParams();
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [reason, setReason] = useState('');
+  //  const [reason, setReason] = useState('');
+    const [mobile_number, setReason] = useState('');
     const [errors, setErrors] = useState(null);
     const { setNotification } = useStateContext()
     const [Communities, setCommunities] = useState([]);
@@ -25,7 +26,7 @@ export default function CommunityDetails() {
             .then(({ data }) => {
                 setLoading(false);
                 setCommunities(data.data);
-                setReason(data.data.length > 0 ? data.data[0].rejection_reason : '');
+                setReason(data.data.length > 0 ? data.data[0].mobile_number : '');
                 axiosClient.get(`/showCommunityTime/${profile_id}`)
                     .then(({ data: timeData }) => {
                         setTime(timeData.data);
@@ -52,14 +53,14 @@ export default function CommunityDetails() {
         setReason(event.target.value);
     };
 
-    const handleEditReason = () => {
-        setErrors('');
-        setModalIsOpen(true);
-    };
+    // const handleEditReason = () => {
+    //     setErrors('');
+    //     setModalIsOpen(true);
+    // };
 
     const handleSaveReason = () => {
-        setCommunities([{ ...Communities[0], rejection_reason: reason }, ...Communities.slice(1)]);
-        setModalIsOpen(false);
+        setCommunities([{ ...Communities[0], mobile_number: mobile_number }, ...Communities.slice(1)]);
+       // setModalIsOpen(false);
     };
 
     const handleSubmit = (ev) => {
@@ -68,18 +69,20 @@ export default function CommunityDetails() {
             const updatedCommunity = {
                 ...Communities[0],
                 profile_id: profile_id,
-                community_id: Communities[0].id
+                community_id: Communities[0].id,
+                mobile_number:mobile_number
+                
             };
 
-            if ((Communities[0].status === "rejected" || Communities[0].status === "block") && !Communities[0].rejection_reason) {
-                setErrors('Rejection Reason is Mandatory Field');
+            if ((Communities[0].status === "rejected" || Communities[0].status === "block") && !Communities[0].mobile_number) {
+                setErrors('Mobile Number is  Mandatory Field');
             } else {
                 setErrors('');
-                axiosClient.post(`/addupdateCommunity`, updatedCommunity)
+                axiosClient.post(`/transferCommunity`, updatedCommunity)
                     .then(() => {
-                        setNotification('Community successfully updated');
+                        setNotification('Community  Transfer successfully ');
                         this.timer = setTimeout(() => {
-                            window.location = '/community';
+                            window.location = '/communityTransfer';
                         }, 1000);
                     })
                     .catch(err => {
@@ -93,20 +96,7 @@ export default function CommunityDetails() {
         }
     };
 
-    function capitalizeFirstLetter(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
-
-    // const community_background_image = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].community_background_image : ''}`;
-    const community_background_image = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].community_image_background : ''}`;
-    const community_image = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].community_image : ''}`;
-    const dummy_background_image = `${import.meta.env.VITE_API_BASE_URL}/communitydocument/banner-image.png`;
-    const dummy_image = `${import.meta.env.VITE_API_BASE_URL}/communitydocument/dummy-profile-pic.jpg`;
-    const qr = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].upload_qr : ''}`;
-    const Licence_front = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].upload_licence01 : ''}`;
-    const Licence_back = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].upload_licence02 : ''}`;
-    const video = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].upload_video : ''}`;
-    const pdf = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].upload_pdf : ''}`;
+    
 
     return (
         <>
@@ -170,7 +160,7 @@ export default function CommunityDetails() {
                             <label htmlFor='Communities'> Enter User Phone</label>
                         </div>
                          <div className="col-lg-9">
-                            <input type='number' className='package-width input-border' id='user_phone' name='user_phone' placeholder='Enter phone number' />
+                            <input type='number' className='package-width input-border' id='mobile_number' name='mobile_number' placeholder='Enter phone number' />
                         </div>
                     </div>
                         
