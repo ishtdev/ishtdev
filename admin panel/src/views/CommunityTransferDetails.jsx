@@ -147,7 +147,7 @@ export default function CommunityDetails() {
                             </div>
                         </div>
                          <div className="row">
-                        <input type='text' value={Communities[0].id || ''} name='community_id' />
+                        
                         <div className="col-lg-3">
                             <label htmlFor='Communities'> Enter User Phone</label>
                         </div>
