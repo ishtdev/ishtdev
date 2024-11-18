@@ -9,8 +9,7 @@ export default function CommunityDetails() {
     let { profile_id } = useParams();
     const [modalIsOpen, setModalIsOpen] = useState(false);
    const [reason, setReason] = useState('');
-    const {mobile_number} = useParams();
-    const [errors, setErrors] = useState(null);
+   const [errors, setErrors] = useState(null);
     const { setNotification } = useStateContext()
     const [Communities, setCommunities] = useState([]);
     const [Time, setTime] = useState([]);
@@ -48,51 +47,47 @@ export default function CommunityDetails() {
             });
     };
 
-
-    const handleInputChange = (event) => {
-        setReason(event.target.value);
-    };
-
-     const handleEditReason = () => {
-     setErrors('');
-     setModalIsOpen(true);
-     };
-
-    const handleSaveReason = () => {
-        setCommunities([{ ...Communities[0], mobile_number: mobile_number }, ...Communities.slice(1)]);
-        setModalIsOpen(false);
-    };
-
     const handleSubmit = (ev) => {
         ev.preventDefault();
-        if (Communities.length > 0 && Communities[0].id) {
-            const updatedCommunity = {
-                ...Communities[0],
-                profile_id: profile_id,
-                community_id: Communities[0].id,
-                mobile_number:mobile_number
+         const formErrors = {};
+        // if (Communities.length > 0 && Communities[0].id) {
+        //     const updatedCommunity = {
+        //         ...Communities[0],
+        //         profile_id: profile_id,
+        //         community_id: Communities[0].id,
+        //         mobile_number:mobile_number
                 
-            };
+        //     };
+         const formData = new FormData(ev.target);
+        const updatedAmenity = Object.fromEntries(formData.entries());
 
-            if ((Communities[0].status === "rejected" || Communities[0].status === "block") && !Communities[0].mobile_number) {
-                setErrors('Mobile Number is  Mandatory Field');
-            } else {
-                setErrors('');
-                axiosClient.post(`/transferCommunity`, updatedCommunity)
-                    .then(() => {
-                        setNotification('Community  Transfer successfully ');
-                        this.timer = setTimeout(() => {
-                            window.location = '/communityTransfer';
-                        }, 1000);
-                    })
-                    .catch(err => {
-                        const response = err.response;
-                        setLoading(false);
-                        if (response && response.status === 422) {
-                            setErrors(response.data.errors);
-                        }
-                    });
-            }
+        if (!updatedAmenity.mobile_number?.trim()) {
+            formErrors.mobile_number = "Mobile Number is required.";
+        }
+
+           if (Object.keys(formErrors).length > 0) {
+            setErrors(formErrors);
+            return;
+        } else {
+            setErrors({});
+            setLoading(true);
+
+            axiosClient.post(`/transferCommunity`, updatedAmenity)
+                .then(() => {
+                    setNotification('Community Transfer successfull');
+                    setTimeout(() => {
+                        window.location = '/communityTransfer';
+                    }, 1000);
+                    setLoading(false);
+                })
+                .catch(err => {
+                    const response = err.response;
+                    setLoading(false);
+                    if (response && response.status === 422) {
+                        setErrors(response.data.errors);
+                    }
+                });
+        }
         }
     };
 
