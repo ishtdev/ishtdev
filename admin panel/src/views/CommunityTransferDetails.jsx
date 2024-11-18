@@ -90,6 +90,19 @@ export default function CommunityDetails() {
         }
     }
     };
+  function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    const community_background_image = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].community_background_image : ''}`;
+    const community_image = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].community_image : ''}`;
+    const dummy_background_image = `${import.meta.env.VITE_API_BASE_URL}/communitydocument/banner-image.png`;
+    const dummy_image = `${import.meta.env.VITE_API_BASE_URL}/communitydocument/dummy-profile-pic.jpg`;
+    const qr = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].upload_qr : ''}`;
+    const Licence_front = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].upload_licence01 : ''}`;
+    const Licence_back = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].upload_licence02 : ''}`;
+    const video = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].upload_video : ''}`;
+    const pdf = `${import.meta.env.VITE_API_BASE_URL}/${Communities.length > 0 ? Communities[0].upload_pdf : ''}`;
 
     
 
