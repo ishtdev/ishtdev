@@ -117,6 +117,20 @@ export default function CommunityDetails() {
                 {!loading && (
                     <form onSubmit={handleSubmit} >
                       
+                        <div className="row">
+                            <div className="col-lg-12">
+                                {Communities.length > 0 && Communities[0].community_background_image ? (
+                                    <div>
+                                        <img className='banner_image' src={Communities[0].community_background_image} alt="Community Background" />
+                                        <a className='open-icon' href={Communities[0].community_background_image} target="_blank" rel="noopener noreferrer">
+                                            <FaExternalLinkAlt /> {/* Icon */}
+                                        </a>
+                                    </div>
+                                ) : (
+                                    <img className='banner_image' src={dummy_background_image} alt="Dummy Image" />
+                                )}
+                            </div>
+                        </div>
                         <div className="row pb-5">
                             <div className="col-lg-3">
                                 {Communities.length > 0 && Communities[0].community_image ? (
