@@ -9,7 +9,7 @@ export default function CommunityDetails() {
     let { profile_id } = useParams();
     const [modalIsOpen, setModalIsOpen] = useState(false);
    const [reason, setReason] = useState('');
-    const [mobile_number, setReason] = useState('');
+    const [mobile_number] = useParams();
     const [errors, setErrors] = useState(null);
     const { setNotification } = useStateContext()
     const [Communities, setCommunities] = useState([]);
