@@ -72,7 +72,7 @@ export default function CommunityDetails() {
             setErrors({});
             setLoading(true);
 
-            axiosClient.post(`/transferCommunity`, updatedCommunity)
+            axiosClient.post(`/transferCommunity`, updatedAmenity)
                 .then(() => {
                     setNotification('Community Transfer successfull');
                     setTimeout(() => {
