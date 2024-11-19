@@ -163,8 +163,8 @@ export default function CommunityDetails() {
                                 <input
     type="text"
     className="package-width input-border"
-    id="community_id"
-    name="community_id"
+    id="profile_id"
+    name="profile_id"
     value={Communities.length > 0 && Communities[0]?.profile_id ? Communities[0].profile_id : ''}
     readOnly
 />
