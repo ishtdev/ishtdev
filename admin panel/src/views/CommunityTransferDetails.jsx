@@ -161,7 +161,7 @@ export default function CommunityDetails() {
     readOnly
 />
                                 <input
-    type="text"
+    type="hidden"
     className="package-width input-border"
     id="profile_id"
     name="profile_id"
