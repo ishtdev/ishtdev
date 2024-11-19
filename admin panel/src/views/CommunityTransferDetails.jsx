@@ -160,6 +160,14 @@ export default function CommunityDetails() {
     value={Communities.length > 0 && Communities[0]?.id ? Communities[0].id : ''}
     readOnly
 />
+                                <input
+    type="text"
+    className="package-width input-border"
+    id="community_id"
+    name="community_id"
+    value={Communities.length > 0 && Communities[0]?.profile_id ? Communities[0].profile_id : ''}
+    readOnly
+/>
 
 
                             <input type='number' className='package-width input-border' id='mobile_number' name='mobile_number' placeholder='Enter phone number' />
