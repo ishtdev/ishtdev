@@ -92,7 +92,7 @@ export default function Community() {
               <th>Created On</th>
               <th>Created At</th>
               <th>Status</th>
-              <th>Actions</th>
+              <th>Actions ddd</th>
             </tr>
           </thead>
           {loading ? (
