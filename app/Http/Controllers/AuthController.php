@@ -899,9 +899,9 @@ class AuthController extends Controller
                 $userTypename = $getuserType->name;
                 $communityData = $CommunityDetails->first();
                 $liveArtiUrl = CommunityArti::where('community_detail_id', $communityData->id)->first()->live_arti_link ?? null;
-                
 
-                $visitCount = UserCheckIn::where('community_id',$communityData->id)->count();
+
+                $visitCount = UserCheckIn::where('community_id', $communityData->id)->count();
                 // echo"<pre>"; print_r($visitCount); die;
 
                 return response()->json([
@@ -931,7 +931,7 @@ class AuthController extends Controller
                         'postCount' => $postCount,
                         'userTypename' => $userTypename,
                         'loggedIn' => auth()->user()->id == $userId ? "true" : "false",
-                        'visitCount' =>$visitCount,
+                        'visitCount' => $visitCount,
                         'donationCount' => 0,
                     ),
                 ]);
@@ -1656,16 +1656,24 @@ class AuthController extends Controller
     public function removefollower(Request $request)
     { //to remove follower
         try {
-            DB::table('follows')
-                ->where('following_profile_id', $request->profile_id_to_remove_follower)
-                ->where('followed_profile_id', auth()->user()->id)
-                ->delete();
 
-            $following_user_details = User::where('id', auth()->user()->id)->first();
 
-            $following_profile_id = Follows::where('following_profile_id', $request->profile_id_to_remove_follower)
-                ->where('followed_profile_id', auth()->user()->id)->get();
+            $following_user_details = User::select('id as following_user_id', 'username')
+                ->where('id', auth()->user()->id)
+                ->first();
 
+            $followingProfile_picture = UserDetails::where('profile_id', auth()->user()->profile->id)->first();
+
+           
+         
+            $following_profile_id = Follows::where('following_profile_id', $request->profile_id)
+                // ->where('followed_profile_id', auth()->user()->id)->get();
+                ->where('followed_profile_id', auth()->user()->profile->id)->get();
+             
+
+                $following_user_details['profile_picture'] = $followingProfile_picture->profile_picture;
+                $following_user_details['profile_id'] = auth()->user()->profile->id;
+              
             if ($following_profile_id->isEmpty()) {
                 return response()->json([
                     'code' => 404,
@@ -1675,23 +1683,40 @@ class AuthController extends Controller
                 ], 404);
             }
 
-            $user_type_id = Profile::select('user_type_id')->where('id', $request->profile_id_to_remove_follower)->first();
+            DB::table('follows')
+            ->where('following_profile_id', $request->profile_id)
+            ->where('followed_profile_id', auth()->user()->profile->id)
+            ->delete();
+
+            $user_type_id = Profile::select('user_type_id','user_id')->where('id', $request->profile_id)->first();
+
+            $following_user_details['followed_user_id'] = $user_type_id->user_id;
+            // echo"<pre>";print_r($following_user_details->toArray()); die;
+
 
             if ($user_type_id['user_type_id'] == 3) {
-                $userToFollowId = Profile::select('user_id')->where('id', $request->profile_id_to_remove_follower)->first();
+                $userToFollowId = Profile::select('user_id')->where('id', $request->profile_id)->first();
                 $unfollowed_user_details = CommunityDetail::where('profile_id', $userToFollowId['user_id'])->get();
             } elseif ($user_type_id['user_type_id'] == 1 || $user_type_id['user_type_id'] == 2) {
-                $userToFollowId = Profile::select('user_id')->where('id', $request->profile_id_to_remove_follower)->first();
-                $unfollowed_user_details = User::where('id', $userToFollowId['user_id'])->first();
+                $userToFollowId = Profile::select('user_id')->where('id', $request->profile_id)->first();
+                $unfollowed_user_details = User::select('id as followed_user_id','username')->where('id', $userToFollowId['user_id'])->first();
+                // echo"<pre>";print_r($unfollowed_user_details->toArray()); die;
+
+                $unfollowedProfile_picture = UserDetails::where('profile_id', $request->profile_id)->first();
+                $unfollowed_user_details['profile_picture'] = $unfollowedProfile_picture->profile_picture;
+                $unfollowed_user_details['following_user_id'] = auth()->user()->id;
+                $unfollowed_user_details['profile_id'] = $request->profile_id;
+
             }
 
-            auth()->user()->followers()->detach($request->profile_id_to_remove_follower);
+            auth()->user()->followers()->detach($request->profile_id);
 
             return response()->json([
                 'status' => 'success',
+                'code' => 200,
                 'user' => array(
-                    "following_user_details" => $this->processObject($following_user_details),
-                    "unfollowed_user_details" => $this->processObject($unfollowed_user_details)
+                    "following_user_details" => [$this->processObject($following_user_details),$this->processObject($unfollowed_user_details)],
+                    // "unfollowed_user_details" => $this->processObject($unfollowed_user_details)
                 ),
             ]);
         } catch (\Exception $e) {
