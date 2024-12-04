@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^44.0.0",
     "@ckeditor/ckeditor5-react": "^7.0.0",
     "@fortawesome/fontawesome-free": "^6.5.2",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
@@ -18,7 +19,6 @@
     "@mui/material": "^5.15.7",
     "axios": "^1.6.7",
     "bootstrap": "^5.3.3",
-    "ckeditor5-build-classic": "^1.0.0",
     "cors": "^2.8.5",
     "formik": "^2.4.5",
     "react": "^18.2.0",
