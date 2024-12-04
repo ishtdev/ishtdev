@@ -14,7 +14,7 @@ use App\Models\User;
 use App\Models\UserCheckIn;
 use App\Models\UserDetails;
 use Carbon\Carbon;
-use DB;
+// use DB;
 use File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +25,7 @@ use SendGrid\Mail\Mail;
 use SendGrid\Mail\To;
 use URL;
 use Validator;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -545,9 +546,7 @@ class AuthController extends Controller
                 $userDetailsData['verification_status'] = 'pending';
             }
 
-            // echo "<pre>";
-            // print_r($userDetailsData);
-            // die;
+
             // die("out");
             $userDetailsData['register_business_name'] = isset($validatedData['register_business_name']) || $request->has('register_business_name') ? $validatedData['register_business_name'] : $UserDetails['register_business_name'];
             $userDetailsData['verified'] = ($userDetailsData['verification_status'] == 'approved') ? 'true' : 'false';
@@ -571,6 +570,16 @@ class AuthController extends Controller
             $userDetailsData['mukha'] = isset($validatedData['mukha']) || $request->has('mukha') ? $validatedData['mukha'] : $UserDetails['mukha'];
             $userDetailsData['become_pandit'] = isset($validatedData['become_pandit']) || $request->has('become_pandit') ? $validatedData['become_pandit'] : $UserDetails['become_pandit'];
             $userDetailsData['make_profile_private'] = isset($validatedData['make_profile_private']) || $request->has('make_profile_private') ? $validatedData['make_profile_private'] : $UserDetails['make_profile_private'];
+
+            // if ((isset($validatedData['make_profile_private']) || $request->has('make_profile_private')) && ($validatedData['make_profile_private'] === 'manual')) {
+
+            //     $userDetailsData['is_requesting'] = 'true';
+            // } else {
+            //     if ((isset($validatedData['make_profile_private']) || $request->has('make_profile_private')) && !empty($validatedData['make_profile_private'])) {
+
+            //         $userDetailsData['is_requesting'] = 'false';
+            //     }
+            // }
 
             $addressDetailsData['street'] = isset($validatedData['street']) || $request->has('street') ? $validatedData['street'] : $addressDetails['street'];
             $addressDetailsData['city'] = isset($validatedData['city']) || $request->has('city') ? $validatedData['city'] : $addressDetails['city'];
@@ -623,7 +632,9 @@ class AuthController extends Controller
             $userDetailsData['business_name'] = $validatedData['business_name'] ?? $UserDetails['business_name'] ?? null;
             $userDetailsData['gst_number'] = $validatedData['gst_number'] ?? $UserDetails['gst_number'] ?? null;
             $userDetailsData['business_address'] = $validatedData['business_address'] ?? $UserDetails['business_address'] ?? null;
-
+            // echo "<pre>";
+            // print_r($userDetailsData);
+            // die;
             if ($request->hasFile('business_doc')) {
                 $file = $request->file('business_doc');
                 $filename = $file->getClientOriginalName();
@@ -781,7 +792,11 @@ class AuthController extends Controller
     public function show(Request $request)
     {
 
+        // die('hhh');
         try {
+            $loggedprofileID = auth()->user()->profile->id;
+            $followingRequestData = Follows::where('following_profile_id', $request->profile_id)->where('followed_profile_id', $loggedprofileID)->first();
+
             $userTypeId = Profile::select('user_type_id')->where('id', $request->profile_id)->first();
             // echo"<pre>"; print_r($userTypeId->toArray()); die;
             $postCount = Post::where('profile_id', $request->profile_id)->where('status', 1)->count();
@@ -798,6 +813,10 @@ class AuthController extends Controller
                 $userId = Profile::select('user_id')->where('id', $request->profile_id)->first();
                 $UserDetails = User::where('id', $userId['user_id'])->get();
                 $UserDetail = UserDetails::where('profile_id', $request->profile_id)->first();
+
+                $UserDetail['request_status'] = $followingRequestData ? $followingRequestData->request_status : null;
+                $UserDetail['is_approved'] = $followingRequestData ? $followingRequestData->request_status : null;
+
                 $userId = Profile::select('user_id')->where('id', $request->profile_id)->first();
                 $isfollow = Follows::where('following_profile_id', auth()->user()->profile->id)
                     ->where('followed_profile_id', $request->profile_id)
@@ -829,6 +848,10 @@ class AuthController extends Controller
                 ]);
             } elseif ($userTypeId['user_type_id'] == "2") {
                 $UserDetails = UserDetails::where('profile_id', $request->profile_id)->first();
+
+                $UserDetails['request_status'] = $followingRequestData ? $followingRequestData->request_status : null;
+                $UserDetails['is_approved'] = $followingRequestData ? $followingRequestData->request_status : null;
+
                 $address = $this->processObject($UserDetails->address->address) ?? null;
                 $getUserId = Profile::where('id', $request->profile_id)->first();
                 $userId = $getUserId->user_id;
@@ -951,6 +974,13 @@ class AuthController extends Controller
     {
         // echo"hello"; echo $profile_id; die;
         try {
+
+            $loggedprofileID = auth()->user()->profile->id;
+            $followingRequestData = Follows::where('following_profile_id', $profile_id)->where('followed_profile_id', $loggedprofileID)->first();
+            // echo "<pre>";
+            // print_r($followingRequestData);
+            // die;
+
             $userTypeId = Profile::select('user_type_id')->where('id', $profile_id)->first();
 
 
@@ -966,6 +996,9 @@ class AuthController extends Controller
                 $userId = Profile::select('user_id')->where('id', $profile_id)->first();
                 $UserDetails = User::where('id', $userId['user_id'])->get();
                 $UserDetail = UserDetails::where('profile_id', $profile_id)->first();
+                $UserDetail['request_status'] = $followingRequestData ? $followingRequestData->request_status : 'NULL';
+                $UserDetail['is_approved'] = $followingRequestData ? $followingRequestData->request_status : 'NULL';
+
                 $userId = Profile::select('user_id')->where('id', $profile_id)->first();
                 $countFollow = Follows::where('following_profile_id', $profile_id)->count();
                 $countFollowing = Follows::where('followed_profile_id', $profile_id)->count();
@@ -991,6 +1024,10 @@ class AuthController extends Controller
                 ]);
             } elseif ($userTypeId['user_type_id'] == "2") {
                 $UserDetails = UserDetails::where('profile_id', $profile_id)->first();
+
+                $UserDetails['request_status'] = $followingRequestData ? $followingRequestData->request_status : 'NULL';
+                $UserDetails['is_approved'] = $followingRequestData ? $followingRequestData->request_status : 'NULL';
+
                 $address = $this->processObject($UserDetails->address->address) ?? null;
                 $getUserId = Profile::where('id', $profile_id)->first();
                 $userId = $getUserId->user_id;
@@ -1506,6 +1543,8 @@ class AuthController extends Controller
      */
     public function follow($profileID)
     {
+        // echo"<pre>"; print_r($profileID); die;
+
         try {
             $profile_id = auth()->user()->profile->id;
             $following_user_details = User::where('id', auth()->user()->id)->first();
@@ -1538,8 +1577,51 @@ class AuthController extends Controller
                 $userToFollowId = Profile::select('user_id')->where('id', $profileID)->first();
                 $followed_user_details = User::where('id', $userToFollowId['user_id'])->first();
             }
+            // $profileID [
+            //     'make_profile_private' => 'Yes',
+            //     'is_approved' => 'pending',
+            //     'request_status' => 'true',
+            //     'created_at' => now(), // Optional, for timestamp
+            // ],
+
+
             auth()->user()->profile->following()->syncWithoutDetaching($profileID);
 
+            $toFollowUserDetails = UserDetails::where('profile_id', $profileID)->first();
+
+            // $followsTemp =  Follows::where('followed_profile_id', $profileID)->where('following_profile_id', $profile_id)->first();
+            // echo "<pre>";
+            // print_r($toFollowUserDetails->toArray());
+            // die;
+
+            if ($toFollowUserDetails['make_profile_private'] === 'Manual') {
+
+                DB::table('follows')
+                    ->where('following_profile_id', $profile_id)
+                    ->where('followed_profile_id', $profileID)
+                    ->update([
+                        'make_profile_private' => $toFollowUserDetails['make_profile_private'],
+                        'is_approved' => 'pending',
+                        'request_status' => 'false',
+                    ]);
+            } else {
+
+                DB::table('follows')
+                    ->where('following_profile_id', $profile_id)
+                    ->where('followed_profile_id', $profileID)
+                    ->update([
+                        'make_profile_private' => $toFollowUserDetails['make_profile_private'],
+                        'is_approved' => 'approved',
+                        'request_status' => 'true',
+                    ]);
+            }
+
+            // if (isset($toFollowUserDetails['make_profile_private']) && ($toFollowUserDetails['make_profile_private'] === 'Yes' || $toFollowUserDetails['make_profile_private'] === 'No')) {
+            //     // $isFollowingUserDetails = UserDetails::where('profile_id', $profile_id)->first();
+            //     // $temp['isUserProfileStatus'] = "True";
+            //     // $isFollowingUserDetails->update($temp);
+            // }
+            //    echo"<pre>"; print_r($isFollowingUserDetails); die;
             return response()->json([
                 'status' => 'success',
                 'user' => array(
@@ -1558,6 +1640,53 @@ class AuthController extends Controller
         }
     }
 
+    public function getFollowRelation($profile_id)
+    {
+        try {
+
+            $loggedInProfileID =  auth()->user()->profile->id;;
+
+            // print_r($loggedInProfileID);
+            // die;
+            $isfollow = Follows::where('following_profile_id', $loggedInProfileID)
+                ->where('followed_profile_id', $profile_id)
+                ->count();
+
+
+            $followRelation = follows::select('following_profile_id', 'followed_profile_id', 'make_profile_private','request_status','is_approved')->where('followed_profile_id', $profile_id)->where('following_profile_id', $loggedInProfileID)->first();
+
+
+            if (!$followRelation) {
+                return response()->json([
+                    'code' => 404,
+                    'status' => "failure",
+                    'message' => 'followRelation not found',
+                    'data' => [],
+                ]);
+            }
+            $followRelation['isfollow'] = $isfollow ? "true" : "false";
+
+            return response()->json([
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'followRelation data',
+                'Data' => $followRelation,
+            ]);
+
+            // print_r($followRelation->toArray());
+            // die;
+
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'code' => 500,
+                'status' => 'error',
+                'message' => 'An unexpected error occurred.',
+                'errors' => [$e->getMessage()],
+                'data' => [],
+            ], 500);
+        }
+    }
     public function unfollow($profileID)
     {
         try {
@@ -1664,16 +1793,16 @@ class AuthController extends Controller
 
             $followingProfile_picture = UserDetails::where('profile_id', auth()->user()->profile->id)->first();
 
-           
-         
+
+
             $following_profile_id = Follows::where('following_profile_id', $request->profile_id)
                 // ->where('followed_profile_id', auth()->user()->id)->get();
                 ->where('followed_profile_id', auth()->user()->profile->id)->get();
-             
 
-                $following_user_details['profile_picture'] = $followingProfile_picture->profile_picture;
-                $following_user_details['profile_id'] = auth()->user()->profile->id;
-              
+
+            $following_user_details['profile_picture'] = $followingProfile_picture->profile_picture;
+            $following_user_details['profile_id'] = auth()->user()->profile->id;
+
             if ($following_profile_id->isEmpty()) {
                 return response()->json([
                     'code' => 404,
@@ -1684,11 +1813,11 @@ class AuthController extends Controller
             }
 
             DB::table('follows')
-            ->where('following_profile_id', $request->profile_id)
-            ->where('followed_profile_id', auth()->user()->profile->id)
-            ->delete();
+                ->where('following_profile_id', $request->profile_id)
+                ->where('followed_profile_id', auth()->user()->profile->id)
+                ->delete();
 
-            $user_type_id = Profile::select('user_type_id','user_id')->where('id', $request->profile_id)->first();
+            $user_type_id = Profile::select('user_type_id', 'user_id')->where('id', $request->profile_id)->first();
 
             $following_user_details['followed_user_id'] = $user_type_id->user_id;
             // echo"<pre>";print_r($following_user_details->toArray()); die;
@@ -1699,14 +1828,13 @@ class AuthController extends Controller
                 $unfollowed_user_details = CommunityDetail::where('profile_id', $userToFollowId['user_id'])->get();
             } elseif ($user_type_id['user_type_id'] == 1 || $user_type_id['user_type_id'] == 2) {
                 $userToFollowId = Profile::select('user_id')->where('id', $request->profile_id)->first();
-                $unfollowed_user_details = User::select('id as followed_user_id','username')->where('id', $userToFollowId['user_id'])->first();
+                $unfollowed_user_details = User::select('id as followed_user_id', 'username')->where('id', $userToFollowId['user_id'])->first();
                 // echo"<pre>";print_r($unfollowed_user_details->toArray()); die;
 
                 $unfollowedProfile_picture = UserDetails::where('profile_id', $request->profile_id)->first();
                 $unfollowed_user_details['profile_picture'] = $unfollowedProfile_picture->profile_picture;
                 $unfollowed_user_details['following_user_id'] = auth()->user()->id;
                 $unfollowed_user_details['profile_id'] = $request->profile_id;
-
             }
 
             auth()->user()->followers()->detach($request->profile_id);
@@ -1715,7 +1843,7 @@ class AuthController extends Controller
                 'status' => 'success',
                 'code' => 200,
                 'user' => array(
-                    "following_user_details" => [$this->processObject($following_user_details),$this->processObject($unfollowed_user_details)],
+                    "following_user_details" => [$this->processObject($following_user_details), $this->processObject($unfollowed_user_details)],
                     // "unfollowed_user_details" => $this->processObject($unfollowed_user_details)
                 ),
             ]);
@@ -1941,12 +2069,12 @@ class AuthController extends Controller
                     'data' => [],
                 ], 404);
             }
+            // echo"<pre>"; print_r($follows->toArray()); die;
 
             // Loop through the follower profiles and fetch details based on user_type_id
             foreach ($follows as $follow) {
                 // Get the user_type_id of the follower profile
                 $user_type_id = Profile::select('user_type_id')->where('id', $follow->following_profile_id)->first();
-
                 if ($user_type_id['user_type_id'] == 3) {
                     // Fetch details for user_type_id 3 (Community Details)
                     $followed_user_details = CommunityDetail::where('profile_id', $follow->following_profile_id)->first();
@@ -1962,6 +2090,13 @@ class AuthController extends Controller
                     $followed_user['username'] = $followed_profile_details->full_name;
                     $followed_user['profile_picture'] = $followed_profile_details->profile_picture;
                     $followed_user['profile_id'] = $followed_profile_details->profile_id;
+
+                    $followed_user['make_profile_private'] = $follow->make_profile_private;
+                    $followed_user['request_status'] = $follow->request_status;
+                    $followed_user['is_approved'] = $follow->is_approved;
+
+                    // echo"<pre>"; print_r($followed_profile_details->is_requesting); die;
+
                 }
 
                 $followed_user['following_profile_id'] = $follow->following_profile_id;
@@ -1982,6 +2117,91 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+
+    public function followApprove(Request $request)
+    { //to show all follower
+        try {
+            $adminuserProfileID =   auth()->user()->profile->id;
+            // echo"<pre>"; print_r($request->all()); die;
+            // Validate the request parameters
+
+            $validator = Validator::make($request->all(), [
+                'profile_id' => 'required',
+                'confirm_request' => 'required',
+            ]);
+
+            // Check for validation errors
+            if ($validator->fails()) {
+                return response()->json([
+                    'code' => 400,
+                    'status' => "failure",
+                    'message' => "Validation error",
+                    'data' => [],
+                ]);
+            }
+
+            $validatedData = $request->all();
+
+            // echo "<pre>";
+            // print_r($validatedData);
+            // die;
+
+            $UserDetail = UserDetails::where('profile_id', $validatedData['profile_id'])->first();
+
+            $adminUserApprove = UserDetails::where('profile_id', $adminuserProfileID)->first();
+
+
+            if (!$UserDetail) {
+                return response()->json([
+                    'code' => 404,
+                    'status' => 'error',
+                    'message' => 'Profile not found',
+                    'data' => [],
+                ], 404);
+            }
+
+            // $UserDetailData['confirm_request'] = $validatedData['confirm_request'];
+
+            if ($validatedData['confirm_request'] === 'approved') {
+
+                // $UserDetailData['isUserProfileStatus'] = 'true';
+
+                DB::table('follows')
+                    ->where('following_profile_id',  $validatedData['profile_id'])
+                    ->where('followed_profile_id', $adminuserProfileID)
+                    ->update([
+                        'make_profile_private' => $adminUserApprove['make_profile_private'],
+                        'is_approved' => 'approved',
+                        'request_status' => 'true',
+                    ]);
+            }
+
+            // $UserDetailData['isUserProfileStatus'] =  $validatedData['confirm_request'];
+
+            // $UserDetail->update($UserDetailData);
+
+            // echo "<pre>";
+            // print_r($UserDetailData);
+            // die;
+
+            return response()->json([
+                'code' => 200,
+                'status' => 'success',
+                'message' => 'Request updated successfully',
+                // 'data' => $this->processObject($UserDetail),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'code' => 500,
+                'status' => 'error',
+                'message' => 'An unexpected error occurred.',
+                'errors' => [$e->getMessage()],
+                'data' => [],
+            ], 500);
+        }
+    }
+
 
     /**
      * PS-4 Level: Check full name availability.

@@ -37,6 +37,7 @@ use App\Models\CommunityHistory;
 use App\Models\CommunityArti;
 use App\Models\UserDetails;
 use App\Models\CommunityFacility;
+use App\Models\GotraChalisa;
 //use App\Image;
 use Image;
 use App\Models\Notification;
@@ -385,7 +386,6 @@ class CommunityController extends Controller
 
 
                     $badgesData = isset($request['badge']) ? json_decode($request['badge'], true) : [];
-                    
                     if ($request->has('badge')) {
 
                         if (isset($badgesData['badges'])) {
@@ -559,7 +559,6 @@ class CommunityController extends Controller
                     $filename = $file->getClientOriginalName();
                     $file->move(base_path() . '/public/communitydocument/', $filename);
                     $client->upload_qr = $userDetailsData['upload_qr'] = 'communitydocument/' . $filename;
-
                 }
                 if ($request->hasFile('upload_pdf')) {
                     $file = $request->file('upload_pdf');
@@ -950,8 +949,7 @@ class CommunityController extends Controller
                     'message' => 'Validation failed',
                     'errors' => $validator->errors(),
                 ], 404);
-            }
-            ;
+            };
             $UserDetails = Profile::where('id', $request->profile_id)->first();
             if (!$UserDetails) {
                 return response()->json([
@@ -1220,8 +1218,6 @@ class CommunityController extends Controller
                 'message' => 'All communities retrieved successfully',
                 'data' => $filteredCommunities,
             ], 200);
-
-
         } catch (\Exception $e) {
             return response()->json([
                 'code' => 500,
@@ -1328,7 +1324,7 @@ class CommunityController extends Controller
                         ];
                     }
                 }
-
+                $gotra_Chalisa = GotraChalisa::select('id', 'key', 'value', 'community_id')->where('community_id', $community->id)->get();
                 // echo"<pre>";print_r($formattedBadges); 
 
                 $filteredCommunities[] = [
@@ -1357,6 +1353,7 @@ class CommunityController extends Controller
                     'live_arti_url' => $liveArtiUrl,
                     'webiste_link' => $community->website_link,
                     'facility' => empty($formattedFacilities) ? null : $this->processObject($formattedFacilities),
+                    'gotraChalisa' => empty($gotra_Chalisa) ? null : $this->processObject($gotra_Chalisa),
                     'badge' => empty($formattedBadges['badge']) ? null : $this->processObject($formattedBadges['badge']),
                 ];
             }
@@ -1367,7 +1364,6 @@ class CommunityController extends Controller
                 'message' => 'All communities retrieved successfully',
                 'data' => $this->processObject($filteredCommunities),
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'code' => 500,
@@ -1611,7 +1607,6 @@ class CommunityController extends Controller
                 'message' => 'Community histories retrieved successfully',
                 'data' => $this->processObject($filteredHistories),
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'code' => 500,
@@ -1623,6 +1618,184 @@ class CommunityController extends Controller
         }
     }
 
+
+    public function addUpdateGotraChalisa(Request $request)
+    {
+
+        // echo"<pre>"; print_r($request->all());die;
+        try {
+            $validator = Validator::make($request->all(), [
+                'community_id' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'code' => 400,
+                    'status' => 'failure',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 400);
+            }
+
+            $data = $request->all();
+            $community = CommunityDetail::where('id', $data['community_id'])->first();
+
+            if (!$community) {
+                return response()->json([
+                    'code' => 404,
+                    'status' => 'error',
+                    'message' => 'Community not found',
+                    'data' => [],
+                ], 404);
+            }
+
+            if (!isset($data['id'])) {
+
+                $gotraChalisa = new GotraChalisa();
+                $gotraChalisa->community_id = $data['community_id'];
+                $gotraChalisa->key = $data['key'];
+                $gotraChalisa->value = $data['value'];
+                $gotraChalisa->save();
+
+                return response()->json([
+                    'code' => 200,
+                    'status' => 'success',
+                    'message' => 'Gotra Chalisa added successfully',
+                    'data' => $this->processObject($gotraChalisa),
+                ], 200);
+            }
+
+            $gotra_Chalisa = GotraChalisa::where('community_id', $request->community_id)->where('id', $data['id'])->first();
+
+            if (!$gotra_Chalisa) {
+                return response()->json([
+                    'code' => 404,
+                    'status' => 'error',
+                    'message' => 'Gotra Chalisa not found',
+                    'data' => [],
+                ], 404);
+            }
+
+            $gotra_ChalisaData['key'] = isset($data['key']) ? $data['key'] : $gotra_Chalisa->key;
+
+            $gotra_ChalisaData['value'] = isset($data['value']) ? $data['value'] : $gotra_Chalisa->value;
+
+            $gotra_Chalisa->update($gotra_ChalisaData);
+
+            return response()->json([
+                'code' => 200,
+                'status' => 'success',
+                'message' => 'Gotra Chalisa updated successfully',
+                'data' => $gotra_ChalisaData,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'code' => 500,
+                'status' => 'error',
+                'message' => 'An error occurred while processing the request.',
+                'errors' => [$e->getMessage()],
+                'data' => [],
+            ], 500);
+        }
+    }
+
+    public function showGotraChalisaDetails($communityId)
+    {
+        // echo $communityId; die('hh');
+        try {
+            
+            $gotra_Chalisa = GotraChalisa::select('id', 'key', 'value', 'community_id')->where('community_id',$communityId)->get();
+
+            if (!$gotra_Chalisa) {
+                return response()->json([
+                    'code' => 404,
+                    'status' => 'error',
+                    'message' => 'Gotra Chalisa not found',
+                    'data' => [],
+                ], 404);
+            }
+
+            return response()->json([
+                'code' => 200,
+                'status' => 'success',
+                'message' => 'Gotra Chalisa List',
+                'data' => $gotra_Chalisa,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'code' => 500,
+                'status' => 'error',
+                'message' => 'An error occurred while processing the request.',
+                'errors' => [$e->getMessage()],
+                'data' => [],
+            ], 500);
+        }
+    }
+
+    public function deleteGotraChalisa(Request $request)
+    {
+  
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required',
+                'community_id' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'code' => 400,
+                    'status' => 'failure',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 400);
+            }
+
+            $data = $request->all();
+            $community = CommunityDetail::where('id', $data['community_id'])->first();
+
+            if (!$community) {
+                return response()->json([
+                    'code' => 404,
+                    'status' => 'error',
+                    'message' => 'Community not found',
+                    'data' => [],
+                ], 404);
+            }
+
+            $gotra_Chalisa = GotraChalisa::where('community_id', $data['community_id'])->where('id', $data['id'])->first();
+
+            if (!$gotra_Chalisa) {
+                return response()->json([
+                    'code' => 404,
+                    'status' => 'error',
+                    'message' => 'Gotra Chalisa not found',
+                    'data' => [],
+                ], 404);
+            }
+
+            
+            // $gotra_ChalisaData['deleted_at'] =  date('Y-m-d H:i:s');
+            $gotra_Chalisa->delete();
+            // echo"<pre>";print_r($gotra_Chalisa);die;
+
+
+            return response()->json([
+                'code' => 200,
+                'status' => 'success',
+                'message' => 'Gotra Chalisa deleted successfully',
+                // 'data' => $gotra_Chalisa,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'code' => 500,
+                'status' => 'error',
+                'message' => 'An error occurred while processing the request.',
+                'errors' => [$e->getMessage()],
+                'data' => [],
+            ], 500);
+        }
+    }
 
     /**
      * PS-4 Level: Add and Update Community Arti Time.
@@ -1748,7 +1921,6 @@ class CommunityController extends Controller
                 'message' => 'Community arti time updated successfully',
                 'data' => $communityTimeData,
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'code' => 500,
@@ -1849,7 +2021,6 @@ class CommunityController extends Controller
                 'message' => 'Community arti retrieved successfully',
                 'data' => $filteredCommunityArti,
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'code' => 500,
@@ -2059,10 +2230,7 @@ class CommunityController extends Controller
                     'message' => 'Community history deleted successfully',
                     'data' => $communityHistoryData,
                 ], 200);
-
             }
-
-
         } catch (\Exception $e) {
             return response()->json([
                 'code' => 500,
