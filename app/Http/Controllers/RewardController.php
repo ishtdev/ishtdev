@@ -384,8 +384,24 @@ class RewardController extends Controller
                     'community' => function ($query) {
                         $query->select('id', 'name_of_community', 'community_image');
                     }
-                ])
-                ->paginate(10);
+                ])->paginate(10);
+		     
+               // Convert the dates from UTC to IST (India Standard Time) for each record
+        $userBadge->getCollection()->transform(function ($record) {
+            // Convert 'created_at' from UTC to IST (India Standard Time)
+            $record->created_at = Carbon::parse($record->created_at)
+                ->timezone('Asia/Kolkata')   // Convert to IST
+                ->format('Y-m-d H:i:s');      // Format the result
+
+            // Convert 'updated_at' from UTC to IST (India Standard Time)
+            $record->updated_at = Carbon::parse($record->updated_at)
+                ->timezone('Asia/Kolkata')   // Convert to IST
+                ->format('Y-m-d H:i:s');      // Format the result
+            
+            return $record;
+        });
+             	
+   
             if (count($userBadge) > 0) {
                 return response()->json([
                     'code' => 200,

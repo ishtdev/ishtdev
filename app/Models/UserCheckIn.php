@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use Carbon\Carbon;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,10 +17,31 @@ class UserCheckIn extends Model
         'batch',
         'community_badge_id'
     ];
-    public function badge_details()
+    
+    protected $dates = ['created_at', 'updated_at'];
+
+    // Override the created_at accessor to convert to IST
+    public function getCreatedAtAttribute($value)
     {
-        return $this->belongsTo(CommunityBadge::class, 'community_badge_id');
+        return Carbon::parse($value)->timezone('Asia/Kolkata')->format('Y-m-d H:i:s');
     }
+
+    // Override the updated_at accessor to convert to IST
+    public function getUpdatedAtAttribute($value)
+    {
+        return Carbon::parse($value)->timezone('Asia/Kolkata')->format('Y-m-d H:i:s');
+    }
+     
+    // public function badge_details()
+    // {
+    //     return $this->belongsTo(CommunityBadge::class, 'community_badge_id');
+    // }
+
+    public function badge_details()
+{
+    return $this->hasOne(CommunityBadge::class, 'badge_id', 'community_badge_id');
+}
+
     public function community()
     {
         return $this->belongsTo(CommunityDetail::class, 'community_id');
