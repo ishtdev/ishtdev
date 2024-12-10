@@ -533,7 +533,7 @@ class AuthController extends Controller
                     $to = $device_key['device_key'];
                     $notification = [
                         "title" => 'Ishtdev Notification',
-                        "body" => 'Your Application is ' . $request->input('verification_status'),
+                        "body" => 'Your Application is ' . $validatedData['verification_status'],
                     ];
                     $data = [
                         "notication" => "true",
@@ -642,7 +642,7 @@ class AuthController extends Controller
                 $userDetailsData['business_doc'] = $validatedData['business_doc'] = 'business_doc/' . $filename;
 
                 if (isset($userDetailsData['business_doc']) && $device_key) {
-                    $chechInNotification = new NotificationController();
+                     $chechInNotification = new NotificationController();
                     $to = $device_key['device_key'];
                     $notification = [
                         "title" => 'Ishtdev Notification',
@@ -680,18 +680,18 @@ class AuthController extends Controller
 
                 $device_key = User::select('device_key')->where('id', $UserDetails['id'])->first();
 
-                $chechInNotification = new NotificationController();
-                $to = $device_key['device_key'];
+                 // $chechInNotification = new NotificationController();
+                // $to = $device_key['device_key'];
 
-                $notification = [
-                    "title" => 'Documents is Uploded successfully',
-                    "body" => 'Will get back to you after Verification',
-                ];
-                $data = [
-                    "notication" => "true",
-                    "source" => "CheckIn",
-                ];
-                $response = $chechInNotification->sendNotificationToOne($to, $notification, $data);
+                // $notification = [
+                //     "title" => 'Documents is Uploded successfully',
+                //     "body" => 'Will get back to you after Verification',
+                // ];
+                // $data = [
+                //     "notication" => "true",
+                //     "source" => "CheckIn",
+                // ];
+                // $response = $chechInNotification->sendNotificationToOne($to, $notification, $data);
                 //print_r($response);die();
             }
 
@@ -738,6 +738,7 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
 
     /**
      * Display the details of a profile with the given profile_id.
