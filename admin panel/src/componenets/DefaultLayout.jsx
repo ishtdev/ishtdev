@@ -36,6 +36,7 @@ export default function DefaultLayout() {
         <Link to='/package'>Package</Link>
         <Link to='/boost-request'>Boost Request</Link>
         <Link to='/reported-post'>Reported Post</Link>
+        <Link to='/reported-post'>Purchase Report </Link>
         <Link to='/amenities'>Amenities</Link>
       </aside>
       <div className="content">
