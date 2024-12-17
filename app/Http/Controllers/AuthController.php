@@ -526,27 +526,28 @@ class AuthController extends Controller
             $userDetailsData['verification_status'] = isset($validatedData['verification_status']) ? $validatedData['verification_status'] : ($request->has('verification_status') ? $request->input('verification_status') : $UserDetails['verification_status']);
 
 
-            if ($request->has('verification_status')) {
+            // die;
+            if (isset($validatedData['user_notification']) && $validatedData['user_notification'] == 1) {
+                if ($request->has('verification_status')) {
 
-                if ($validatedData['verification_status'] == 'approved' || $validatedData['verification_status'] == 'rejected') {
-                    $chechInNotification = new NotificationController();
-                    $to = $device_key['device_key'];
-                    $notification = [
-                        "title" => 'Ishtdev Notification',
-                        "body" => 'Your Application is ' . $validatedData['verification_status'],
-                    ];
-                    $data = [
-                        "notication" => "true",
-                        "source" => "CheckIn",
-                    ];
-                    $response = $chechInNotification->sendNotificationToOne($to, $notification, $data);
+                    if ($validatedData['verification_status'] == 'approved' || $validatedData['verification_status'] == 'rejected') {
+                        $chechInNotification = new NotificationController();
+                        $to = $device_key['device_key'];
+                        $notification = [
+                            "title" => 'Ishtdev Notification',
+                            "body" => 'Your Verification Request is ' . $validatedData['verification_status'] . '.',
+                        ];
+                        $data = [
+                            "notication" => "true",
+                            "source" => "CheckIn",
+                        ];
+                        $response = $chechInNotification->sendNotificationToOne($to, $notification, $data);
+                    }
+                } else {
+                    // die("else");
+                    $userDetailsData['verification_status'] = 'pending';
                 }
-            } else {
-                // die("else");
-                $userDetailsData['verification_status'] = 'pending';
             }
-
-
             // die("out");
             $userDetailsData['register_business_name'] = isset($validatedData['register_business_name']) || $request->has('register_business_name') ? $validatedData['register_business_name'] : $UserDetails['register_business_name'];
             $userDetailsData['verified'] = ($userDetailsData['verification_status'] == 'approved') ? 'true' : 'false';
@@ -607,21 +608,22 @@ class AuthController extends Controller
             ) {
                 $userDetailsData['business_invalidate_reason'] = $validatedData['business_invalidate_reason'];
             }
+            if (isset($validatedData['business_notification']) && $validatedData['business_notification'] == 1) {
+                if (isset($validatedData['business_verification_status']) && $request->has('business_verification_status')) {
 
-            if (isset($validatedData['business_verification_status']) && $request->has('business_verification_status')) {
-
-                if ($validatedData['business_verification_status'] === 'approved' || $validatedData['business_verification_status'] === 'rejected') {
-                    $chechInNotification = new NotificationController();
-                    $to = $device_key['device_key'];
-                    $notification = [
-                        "title" => 'Ishtdev Notification',
-                        "body" => 'Your Application is ' . $request->input('business_verification_status'),
-                    ];
-                    $notificationData = [
-                        "notication" => "true",
-                        "source" => "CheckIn",
-                    ];
-                    $response = $chechInNotification->sendNotificationToOne($to, $notification, $notificationData);
+                    if ($validatedData['business_verification_status'] === 'approved' || $validatedData['business_verification_status'] === 'rejected') {
+                        $chechInNotification = new NotificationController();
+                        $to = $device_key['device_key'];
+                        $notification = [
+                            "title" => 'Ishtdev Notification',
+                            "body" => 'Your Business Verification Request is ' . $request->input('business_verification_status') . '.',
+                        ];
+                        $notificationData = [
+                            "notication" => "true",
+                            "source" => "CheckIn",
+                        ];
+                        $response = $chechInNotification->sendNotificationToOne($to, $notification, $notificationData);
+                    }
                 }
             }
 
@@ -642,7 +644,7 @@ class AuthController extends Controller
                 $userDetailsData['business_doc'] = $validatedData['business_doc'] = 'business_doc/' . $filename;
 
                 if (isset($userDetailsData['business_doc']) && $device_key) {
-                     $chechInNotification = new NotificationController();
+                    $chechInNotification = new NotificationController();
                     $to = $device_key['device_key'];
                     $notification = [
                         "title" => 'Ishtdev Notification',
@@ -680,7 +682,7 @@ class AuthController extends Controller
 
                 $device_key = User::select('device_key')->where('id', $UserDetails['id'])->first();
 
-                 // $chechInNotification = new NotificationController();
+                // $chechInNotification = new NotificationController();
                 // $to = $device_key['device_key'];
 
                 // $notification = [
@@ -1654,7 +1656,7 @@ class AuthController extends Controller
                 ->count();
 
 
-            $followRelation = follows::select('following_profile_id', 'followed_profile_id', 'make_profile_private','request_status','is_approved')->where('followed_profile_id', $profile_id)->where('following_profile_id', $loggedInProfileID)->first();
+            $followRelation = follows::select('following_profile_id', 'followed_profile_id', 'make_profile_private', 'request_status', 'is_approved')->where('followed_profile_id', $profile_id)->where('following_profile_id', $loggedInProfileID)->first();
 
 
             if (!$followRelation) {

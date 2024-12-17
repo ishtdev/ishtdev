@@ -56,7 +56,8 @@ export default function BusinessDetails() {
                 ...user,
                 profile_id: profile_id,
                 user_id: user.id,
-                business_verification_status: user.business_verification_status
+                business_verification_status: user.business_verification_status,
+                business_notification:1
             };
 
             if ((user.business_verification_status === "rejected") && !user.business_invalidate_reason) {
