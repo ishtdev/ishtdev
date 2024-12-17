@@ -40,8 +40,9 @@ Route::middleware(['jwt.verify'])->group(function () {
 
     Route::post('profiles', [AuthController::class, 'update']);
     Route::post('userProfile', [AuthController::class, 'show']);
-    // use for admin pannel
+    Route::get('getFollowRelation/{profileId}', [AuthController::class, 'getFollowRelation']);
     Route::post('userProfile/{profileId}', [AuthController::class, 'showProfile']);
+    Route::post('followApprove', [AuthController::class, 'followApprove']);
 
     Route::post('/user/follow/{userToFollow}', [AuthController::class, 'follow']);
     Route::delete('/user/unfollow/{userToUnfollow}', [AuthController::class, 'unfollow']);
@@ -56,6 +57,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('/post/store', [PostController::class, 'store']);
     Route::post('/likePost', [PostController::class, 'likePost']);
     Route::post('/getallpostbyHashtag', [PostController::class, 'getallpostbyHashtag']);
+    Route::post('/getPostsByHashtagData', [PostController::class, 'getPostsByHashtagData']);
     Route::delete('/delete-post/{postId}', [PostController::class, 'deletePost']);
     Route::delete('/delete-post-by-admin/{postId}', [PostController::class, 'deletePostByAdmin']);
     Route::post('/getPostCommnet', [PostController::class, 'getPostCommnet']);
@@ -77,6 +79,14 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('/addCommunityHistory', [CommunityController::class, 'addCommunityHistory']);
     Route::get('/showCommunityHistory/{communityId}', [CommunityController::class, 'showCommunityHistory']);
     Route::post('/deleteCommunityHistory', [CommunityController::class, 'deleteCommunityHistory']);
+   
+   
+    // Gotra Chalisa API
+    Route::post('/addUpdateGotraChalisa', [CommunityController::class, 'addUpdateGotraChalisa']);
+    Route::get('/showGotraChalisaDetails/{communityId}', [CommunityController::class, 'showGotraChalisaDetails']);
+    Route::delete('/deleteGotraChalisa', [CommunityController::class, 'deleteGotraChalisa']);
+    // end Gotra Chalisa API
+
     Route::post('/addupdateCommunityArti', [CommunityController::class, 'addupdateCommunityArti']);
     Route::get('/showCommunityArti/{communityId}', [CommunityController::class, 'showCommunityArti']);
     Route::post('/uniqueCommunityName', [CommunityController::class, 'uniqueCommunityName']);
@@ -105,6 +115,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('/searchCommunity', [SearchController::class, 'searchCommunity']);
     Route::post('/nearByCommunity', [SearchController::class, 'nearByCommunity']);
     Route::get('/searchUser/{name}', [SearchController::class, 'searchUser']);
+    Route::get('/searchUser', [SearchController::class, 'searchUser']);
 
     Route::post('/addPost', [NotificationController::class, 'addPost']);
     Route::post('/reportPost', [PostController::class, 'reportPost']);
@@ -112,6 +123,10 @@ Route::middleware(['jwt.verify'])->group(function () {
 
     Route::post('/getBadgeImage', [RewardController::class, 'getBadgeImage']);
     Route::get('/getLordName', [RewardController::class, 'getLordName']);
+    Route::get('/getLordBadge', [RewardController::class, 'getLordBadge']);
+    Route::get('/getLordBadgeDetail/{id}', [RewardController::class, 'getLordBadgeDetail']);
+    Route::post('/add-lord-badge', [RewardController::class, 'addLordBadge']); 
+    Route::post('/update-lord-badge', [RewardController::class, 'updateLordBadge']); 
     Route::get('/getUserBadge/{user_id}', [RewardController::class, 'getUserBadge']);
     Route::get('/getUserCheckIn/{user_id}', [RewardController::class, 'getUserCheckIn']);
     Route::delete('/deleteBadge/{badge_id}', [RewardController::class, 'deleteBadge']);

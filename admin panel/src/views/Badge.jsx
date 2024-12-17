@@ -1,22 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axiosClient from "../axios-client.js";
-import TableHeadLayout from '../componenets/TableHeadLayout.jsx';
+import { useNavigate } from 'react-router-dom';
 
-export default function Community() {
-  const [communities, setCommunities] = useState([]);
+export default function Badge() {
+  // const [lordName, setLordName] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [jumpToPage, setJumpToPage] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); 
+  const [errorMessage, setErrorMessage] = useState("");
   const itemsPerPage = 10;
 
+
   useEffect(() => {
-    getCommunities();
+    getLordBadge();
   }, []);
 
+
+
+  const handleKeyDown = (e) => {
+    if (e.key === '-' || e.key === 'e') {
+      e.preventDefault();
+    }
+  };
+  
   const handleJumpToPage = () => {
     const page = parseInt(jumpToPage, 10);
     if (page >= 1 && page <= totalPages) {
@@ -27,18 +35,15 @@ export default function Community() {
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === '-' || e.key === 'e') {
-      e.preventDefault();
-    }
-  };
-  
-  const getCommunities = () => {
+  const getLordBadge = () => {
     setLoading(true);
-    axiosClient.get('/showAllCommunity')
+    axiosClient.get('/getLordBadge')
       .then(({ data }) => {
         setLoading(false);
-        setCommunities(data.data);
+        // lordName(data.data);
+
+        // console.log('data', data.data);
+        
         setSearchResults(data.data);
       })
       .catch(() => {
@@ -46,22 +51,20 @@ export default function Community() {
       });
   };
 
-  const handleSearch = (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    const filteredCommunities = communities.filter(c => 
-      c.name_of_community.toLowerCase().includes(query.toLowerCase())
-    );
-    setSearchResults(filteredCommunities);
-    setCurrentPage(1);
-  };
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = searchResults.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(searchResults.length / itemsPerPage);
 
-  const paginate = pageNumber => setCurrentPage(pageNumber);
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/create-badge');
+  };
+
+  const paginate = pageNumber => {
+    setCurrentPage(pageNumber);
+  };
 
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -70,28 +73,19 @@ export default function Community() {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Communities</h1>
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search Community"
-            value={searchQuery}
-            onChange={handleSearch}
-            className="search-input"
-          />
-          <i className="fa fa-search search-icon"></i>
-        </div>
+        <h1>Badges</h1>
       </div>
       <div className="card animated fadeInDown">
+        <div style={{ display: 'flex', justifyContent: "space-between", alignItems: "center" }} className='mb-4'>
+          <button type="button" className="btn-custom" onClick={handleClick}>Create Badge</button>
+        </div>
         <table>
           <thead>
             <tr>
               <th>Sr No.</th>
-              <th>Profile ID</th>
-              <th>Name Of Community</th>
-              <th>Created On</th>
-              <th>Created At</th>
-              <th>Status</th>
+              <th>Lord</th>
+              <th>Badge Type</th>
+              <th>Image</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -105,18 +99,20 @@ export default function Community() {
             </tbody>
           ) : (
             <tbody>
-              {currentItems.map((c, index) => (
-                <tr key={c.id}>
+              {currentItems.map((b, index) => (
+                <tr key={b.id}>
                   <td>{indexOfFirstItem + index + 1}</td>
-                  <td>{c.profile_id}</td>
-                  <td>{c.name_of_community}</td>
-                  <td>{c.created_at.date}</td>
-                  <td>{c.created_at.time}</td>
-                  <td style={{ color: c.status === 'approved' ? 'green' : c.status === 'approved_with_tick' ? 'orange' : c.status === 'pending' ? '#ffdc09' : c.status === 'rejected' ? 'orange' : c.status === 'block' ? 'red' : 'inherit' }}>
-                    {capitalizeFirstLetter(c.status)}
+                  <td>{b?.lord?.lord_name }</td>
+                  <td>
+                   {b?.type }
                   </td>
                   <td>
-                    <Link className="btn-custom" to={'/community/' + c.profile_id}>View</Link>
+                  <a href={`${import.meta.env.VITE_API_BASE_URL}/${b.image}`} target="_blank" rel="noopener noreferrer">
+                                    <img   style={{ width: '50px', height: '50px' }}  src={`${import.meta.env.VITE_API_BASE_URL}/${b.image}`} alt="Amenity Icon" />
+                                </a>
+                  </td>
+                  <td>
+                    <Link className="btn-custom mr-3" to={'/badge-edit/' + b.id}>Edit</Link>
                   </td>
                 </tr>
               ))}
@@ -142,22 +138,23 @@ export default function Community() {
             {'>'}
           </button>
         </div>
+
         <div className="jump-to-page" >
-            <input
-              type="number"
-              value={jumpToPage}
-              onChange={(e) => setJumpToPage(e.target.value)}
-              className="form-control"
-              min="0"
-              onKeyDown={handleKeyDown}
-            />
-            <button className='btn-custom' onClick={handleJumpToPage}>Jump to Page</button>
-            {errorMessage && (
-              <div className="pagination-error">
-                {errorMessage}
-              </div>
-            )}
-          </div>
+          <input
+            type="number"
+            value={jumpToPage}
+            onChange={(e) => setJumpToPage(e.target.value)}
+            className="form-control"
+            min="0"
+            onKeyDown={handleKeyDown}
+          />
+          <button className='btn-custom' onClick={handleJumpToPage}>Jump to Page</button>
+          {errorMessage && (
+            <div className="pagination-error">
+              {errorMessage}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

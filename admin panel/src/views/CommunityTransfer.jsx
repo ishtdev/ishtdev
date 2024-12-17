@@ -116,7 +116,7 @@ export default function Community() {
                     {capitalizeFirstLetter(c.status)}
                   </td>
                   <td>
-                    <Link className="btn-custom" to={'/community/' + c.profile_id}>View</Link>
+                    <Link className="btn-custom" to={'/communityTransfer/' + c.profile_id}>Transfer</Link>
                   </td>
                 </tr>
               ))}

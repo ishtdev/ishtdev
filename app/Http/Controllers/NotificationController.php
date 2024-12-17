@@ -288,7 +288,7 @@ class NotificationController extends Controller
             $post->profile_id = $validatedData['profile_id'];
             $post->save();
             $id = $post->id;
-
+ 	    $postDataCreate = null;
             if ($request->hasFile('post_data')) {
                 foreach ($request->file('post_data') as $image) {
                     $imageName = time() . '_' . $image->getClientOriginalName();
@@ -338,7 +338,7 @@ class NotificationController extends Controller
                     'message' => 'Community Does Not Exist',
                 ], 404);
             }
-            $communityDetail = CommunityDetail::select('name_of_community')->where("profile_id", $validatedData['profile_id'])->first();
+            $communityDetail = CommunityDetail::select('id as community_id','name_of_community')->where("profile_id", $validatedData['profile_id'])->first();
             $notificationController = new NotificationController();
             $communityName = str_replace(' ', '', $communityDetail['name_of_community']);
             $baseUrl = URL::to('/');
@@ -349,15 +349,17 @@ class NotificationController extends Controller
                 "title" => $validatedData['title'],
                 "body" => $validatedData['body'],
             ];
+
             $data = [
                 "url" => $posturl,
                 "message_body" => $validatedData['message_body'],
                 "contentType" => $contectType,
                 "source" => "Ishtdev",
-                "notication" => "true",
+                "notication" => (string) $validatedData['profile_id'],
             ];
+            // echo"<pre>"; print_r($data); die;
             $response = $notificationController->sendNotificationToAll($communityName, $notification, $data);
-            // echo $response;die();
+            // echo"<pre>"; print_r($response); die;
             //--------notify with post end---------
             $findPost->notification = $notification;
             $findPost->message_body = $data['message_body'];

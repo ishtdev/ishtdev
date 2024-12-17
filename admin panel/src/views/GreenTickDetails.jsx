@@ -55,7 +55,8 @@ export default function GreenTickDetails() {
             const updatedUser = {
                 ...user,
                 profile_id: profile_id,
-                verification_status: user.verification_status
+                verification_status: user.verification_status,
+                user_notification:1,
             };
 
             if ((user.verification_status === "rejected") && !user.invalidate_reason) {

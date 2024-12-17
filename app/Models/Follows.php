@@ -16,6 +16,9 @@ class Follows extends Model
     protected $fillable = [
         'following_profile_id',
         'followed_profile_id',
+        'make_profile_private',
+        'is_approved',
+        'request_status',
     ];
 
 }

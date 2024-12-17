@@ -1,5 +1,6 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import Community from "./views/Community.jsx";
+import CommunityTransfer from "./views/CommunityTransfer.jsx";
 import Business from "./views/Business.jsx";
 import BusinessDetails from "./views/BusinessDetails.jsx";
 import User from "./views/User.jsx";
@@ -9,6 +10,7 @@ import DefaultLayout from "./componenets/DefaultLayout.jsx";
 import GuestLayout from "./componenets/GuestLayout.jsx";
 import UserDetails from "./views/UserDetails.jsx";
 import CommunityDetails from "./views/CommunityDetails.jsx";
+import CommunityTransferDetails from "./views/CommunityTransferDetails.jsx";
 import VerifyAdmin from "./views/VerifyAdmin.jsx";
 import VerifyOtp from "./views/VerifyOtp.jsx";
 import CommunityShare from "./views/CommunityShare.jsx";
@@ -27,7 +29,9 @@ import ReportedPostDetails from "./views/ReportedPostDetails.jsx";
 import Amenities from "./views/Amenities.jsx";
 import AmenityCreate from "./views/AmenityCreate.jsx";
 import AmenityEdit from "./views/AmenityEdit.jsx";
-
+import Badge from "./views/Badge.jsx";
+import BadgeCreate from "./views/BadgeCreate.jsx";
+import BadgeEdit from "./views/BadgeEdit.jsx";
 const router = createBrowserRouter([
     {
         path: "/",
@@ -63,6 +67,18 @@ const router = createBrowserRouter([
                 element: <Dashboard />
             },
             {
+                path: "/badge",
+                element: <Badge/>
+            },
+            {
+                path: '/create-badge',
+                element: <BadgeCreate />
+            },
+            {
+                path: '/badge-edit/:id',
+                element: <BadgeEdit />
+            },
+            {
                 path: "/user",
                 element: <User />
             },
@@ -75,8 +91,16 @@ const router = createBrowserRouter([
                 element: <Community />
             },
             {
+                path: "/communityTransfer",
+                element: <CommunityTransfer />
+            },
+            {
                 path: '/community/:profile_id',
                 element: <CommunityDetails />
+            },
+            {
+                path: '/communityTransfer/:profile_id',
+                element: <CommunityTransferDetails />
             },
             {
                 path: '/wishlist',

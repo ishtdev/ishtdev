@@ -27,8 +27,10 @@ export default function DefaultLayout() {
       <aside>
         <div className='imgBox'><img className='w-5' src={`${import.meta.env.VITE_API_BASE_URL}/image/logo.png`} /></div>
         <Link to='/dashboard'>Dashboard</Link>
+        <Link to='/badge'>Badge</Link>
         <Link to='/user'>Pandit Verification</Link>
         <Link to='/Community'>Community Verification</Link>
+        <Link to='/CommunityTransfer'>Community Transfer</Link>
         <Link to='/wishlist'>Wishlist</Link>
         <Link to='/business'>Business Verification</Link>
         <Link to='/green-tick'>User Verification</Link>

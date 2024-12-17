@@ -52,7 +52,7 @@ class UserDetails extends Model
         'business_address',
         'business_invalidate_reason',
         'business_verification_status',
-        'register_business_name'
+        'register_business_name',
     ];
     public function profile()
     {
