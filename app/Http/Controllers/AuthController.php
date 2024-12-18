@@ -595,7 +595,7 @@ class AuthController extends Controller
                 isset($validatedData['business_verification_status']) && $request->has('business_verification_status') && $validatedData['business_verification_status'] === 'approved'
             ) ? 'true' : 'false';
 
-            $userDetailsData['business_verification_status'] = 'pending';
+           // $userDetailsData['business_verification_status'] = 'pending';
 
             if (isset($validatedData['business_verification_status']) && $request->has('business_verification_status')) {
                 $userDetailsData['business_verification_status'] = $validatedData['business_verification_status'];
@@ -648,7 +648,7 @@ class AuthController extends Controller
                     $to = $device_key['device_key'];
                     $notification = [
                         "title" => 'Ishtdev Notification',
-                        "body" => 'Business document has been uploaded, please wait for approval',
+                        "body" => 'Business document has been uploaded.',
                     ];
                     $data = [
                         "notication" => "true",
@@ -679,7 +679,9 @@ class AuthController extends Controller
                     $file->move(base_path() . '/public/images/', $filename);
                     $userDetailsData['doc_back'] = $validatedData['doc_back'] = 'images/' . $filename;
                 }
-
+                if ($request->hasFile('doc_front') || $request->hasFile('doc_back')) {
+                    $userDetailsData['verification_status'] = 'pending';
+                }
                 $device_key = User::select('device_key')->where('id', $UserDetails['id'])->first();
 
                 // $chechInNotification = new NotificationController();
@@ -1596,28 +1598,32 @@ class AuthController extends Controller
             // echo "<pre>";
             // print_r($toFollowUserDetails->toArray());
             // die;
+            // echo"<pre>"; print_r($toFollowUserDetails); die;
 
-            if ($toFollowUserDetails['make_profile_private'] === 'Manual') {
+            if (!empty($toFollowUserDetails)) {
+                if ($toFollowUserDetails['make_profile_private'] === 'Manual') {
 
-                DB::table('follows')
-                    ->where('following_profile_id', $profile_id)
-                    ->where('followed_profile_id', $profileID)
-                    ->update([
-                        'make_profile_private' => $toFollowUserDetails['make_profile_private'],
-                        'is_approved' => 'pending',
-                        'request_status' => 'false',
-                    ]);
-            } else {
+                    DB::table('follows')
+                        ->where('following_profile_id', $profile_id)
+                        ->where('followed_profile_id', $profileID)
+                        ->update([
+                            'make_profile_private' => $toFollowUserDetails['make_profile_private'],
+                            'is_approved' => 'pending',
+                            'request_status' => 'false',
+                        ]);
+                } else {
 
-                DB::table('follows')
-                    ->where('following_profile_id', $profile_id)
-                    ->where('followed_profile_id', $profileID)
-                    ->update([
-                        'make_profile_private' => $toFollowUserDetails['make_profile_private'],
-                        'is_approved' => 'approved',
-                        'request_status' => 'true',
-                    ]);
+                    DB::table('follows')
+                        ->where('following_profile_id', $profile_id)
+                        ->where('followed_profile_id', $profileID)
+                        ->update([
+                            'make_profile_private' => $toFollowUserDetails['make_profile_private'],
+                            'is_approved' => 'approved',
+                            'request_status' => 'true',
+                        ]);
+                }
             }
+
 
             // if (isset($toFollowUserDetails['make_profile_private']) && ($toFollowUserDetails['make_profile_private'] === 'Yes' || $toFollowUserDetails['make_profile_private'] === 'No')) {
             //     // $isFollowingUserDetails = UserDetails::where('profile_id', $profile_id)->first();
@@ -1625,6 +1631,7 @@ class AuthController extends Controller
             //     // $isFollowingUserDetails->update($temp);
             // }
             //    echo"<pre>"; print_r($isFollowingUserDetails); die;
+
             return response()->json([
                 'status' => 'success',
                 'user' => array(
@@ -1642,6 +1649,7 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
 
     public function getFollowRelation($profile_id)
     {
