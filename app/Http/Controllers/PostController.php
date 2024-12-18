@@ -1741,7 +1741,7 @@ class PostController extends Controller
                 return response()->json([
                     'code' => 400,
                     'status' => 'success',
-                    'message' => 'Post alredy reported',
+                    'message' => 'Post already reported',
                     'data' => (object) [],
                 ]);
             } else {
