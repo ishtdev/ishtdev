@@ -548,7 +548,13 @@ class AuthController extends Controller
                     $userDetailsData['verification_status'] = 'pending';
                 }
             }
-            // die("out");
+
+
+            if($request->has('business_type') || $request->has('business_name') || $request->has('register_business_name') || $request->has('gst_number') || $request->has('business_state')|| $request->has('business_city') || $request->has('business_pincode')|| $request->has('business_address')|| $request->has('business_doc')){
+                $userDetailsData['business_verification_status'] = 'pending';
+            }
+
+
             $userDetailsData['register_business_name'] = isset($validatedData['register_business_name']) || $request->has('register_business_name') ? $validatedData['register_business_name'] : $UserDetails['register_business_name'];
             $userDetailsData['verified'] = ($userDetailsData['verification_status'] == 'approved') ? 'true' : 'false';
             $userDetailsData['invalidate_reason'] = isset($validatedData['invalidate_reason']) || $request->has('invalidate_reason') ? $validatedData['invalidate_reason'] : $UserDetails['invalidate_reason'];
@@ -626,6 +632,7 @@ class AuthController extends Controller
                     }
                 }
             }
+
 
             $userDetailsData['business_city'] = $validatedData['business_city'] ?? $UserDetails['business_city'] ?? null;
             $userDetailsData['business_state'] = $validatedData['business_state'] ?? $UserDetails['business_state'] ?? null;
