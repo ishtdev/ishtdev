@@ -506,9 +506,7 @@ class AuthController extends Controller
     public function update(Request $request)
     {
         try {
-            // echo "<pre>";
-            // print_r($request->all());
-            // die;
+
             $UserDetails = UserDetails::where('profile_id', $request->profile_id)->first();
             $addressDetails = Address::where('profile_id', $request->profile_id)->first();
             $ProfileDetails = Profile::where('id', $request->profile_id)->first();
@@ -550,7 +548,7 @@ class AuthController extends Controller
             }
 
 
-            if($request->has('business_type') || $request->has('business_name') || $request->has('register_business_name') || $request->has('gst_number') || $request->has('business_state')|| $request->has('business_city') || $request->has('business_pincode')|| $request->has('business_address')|| $request->has('business_doc')){
+            if ($request->has('business_type') || $request->has('business_name') || $request->has('register_business_name') || $request->has('gst_number') || $request->has('business_state') || $request->has('business_city') || $request->has('business_pincode') || $request->has('business_address') || $request->has('business_doc')) {
                 $userDetailsData['business_verification_status'] = 'pending';
             }
 
@@ -601,7 +599,7 @@ class AuthController extends Controller
                 isset($validatedData['business_verification_status']) && $request->has('business_verification_status') && $validatedData['business_verification_status'] === 'approved'
             ) ? 'true' : 'false';
 
-           // $userDetailsData['business_verification_status'] = 'pending';
+            // $userDetailsData['business_verification_status'] = 'pending';
 
             if (isset($validatedData['business_verification_status']) && $request->has('business_verification_status')) {
                 $userDetailsData['business_verification_status'] = $validatedData['business_verification_status'];
@@ -705,6 +703,25 @@ class AuthController extends Controller
                 // $response = $chechInNotification->sendNotificationToOne($to, $notification, $data);
                 //print_r($response);die();
             }
+
+            if ($UserDetails->business_verification_status === 'approved') {
+                $userDetailsData['is_business_profile'] = 'true';
+            }
+
+            
+
+            if ($UserDetails->business_verification_status === 'rejected') {
+                $userDetailsData['is_business_profile'] = 'false';
+
+                if (isset($validatedData['business_verification_status']) && $validatedData['business_verification_status'] === 'approved') {
+                    $userDetailsData['is_business_profile'] = 'true';
+                }
+            }
+
+            if (isset($validatedData['business_verification_status']) && $validatedData['business_verification_status'] === 'rejected') {
+                $userDetailsData['is_business_profile'] = 'false';
+            }
+
 
             if ($userDetailsData['become_pandit'] == "approved") {
                 $profileDetailsData['user_type_id'] = '2';
