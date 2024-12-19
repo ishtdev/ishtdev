@@ -54,6 +54,7 @@ export default function Business() {
   const paginate = pageNumber => setCurrentPage(pageNumber);
 
   function capitalizeFirstLetter(string) {
+    if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 

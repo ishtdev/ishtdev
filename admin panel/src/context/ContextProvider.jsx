@@ -6,6 +6,7 @@ import { createContext, useContext, useState } from "react";
     notification: null,
     setUser: () => {},
     setToken: () => {},
+    setToken: () => {},
     setNotification: () => {}
 })
 export const ContextProvider = ({children}) => {
