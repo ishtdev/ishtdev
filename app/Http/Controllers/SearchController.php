@@ -267,7 +267,7 @@ class SearchController extends Controller
                 unset($post->updated_at);
                 unset($post->deleted_at);
 
-                $post->share = 'https://ishtdev.netlify.app/post-share/' . $post->id;
+                $post->share = 'https://app.ishtdev.in/post-share/' . $post->id;
                 $isLiked = PostLike::select('like_flag')->where('profile_id',$loggedin_profile_id)->where('post_id',$post->id)->first();
                 $post->isLiked = ($isLiked && $isLiked->like_flag == '1') ? 'true' : 'false';
                 $profile = $this->processObject($post->profile);

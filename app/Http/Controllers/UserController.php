@@ -563,7 +563,7 @@ class UserController extends Controller
                     'data' => [],
                 ], 404);
             }
-            $post->share = 'https://ishtdevprod.netlify.app/post-share/' . $post->id;
+            $post->share = 'https://app.ishtdev.in/post-share/' . $post->id;
             $post->isLiked = ($isLiked && $isLiked->like_flag == '1') ? 'true' : 'false';
 
             $isFollowing = Follows::where('following_profile_id', $loggedin_profile_id)->where('followed_profile_id', $post->profile->id)->first();
